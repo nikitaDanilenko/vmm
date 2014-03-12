@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Random Matrices as Pure Association Lists</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+</head>
+<body>
+<div id="header">
+<h1 class="title">Random Matrices as Pure Association Lists</h1>
+</div>
+<p>This module provides a simple generation of different types of random matrices (e.g. triangle or diagonal matrices). The randomness is provided by the <code class="sourceCode haskell"><span class="dt">System.Random</span></code> implementation and is thus repeatable, which makes it very useful for testing.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">RandomMatrix</span> (
+    randomMatLike,
+    randomSquareMatLike,
+    randomDiagonalLike,
+    randomTriangleLike,
+    randomStrictTriangleLike,
+    randomRelationLike,
+
+    <span class="dt">MatLike</span>,
+
+    <span class="co">-- * Re-export from &quot;System.Random&quot; to simplify testing</span>
+    mkStdGen,
+    <span class="dt">StdGen</span>,
+    <span class="dt">Random</span>
+    ) <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Data.Maybe</span>            ( mapMaybe )
+
+<span class="kw">import </span><span class="dt">System.Random</span>         ( <span class="dt">Random</span> (..), <span class="dt">RandomGen</span>, <span class="dt">StdGen</span>, split, mkStdGen )
+<span class="kw">import </span><span class="dt">System.Random.Shuffle</span> ( shuffle&#39; )
+
+<span class="kw">import </span><span class="dt">Semiring</span>              ( <span class="dt">Number</span> ( .. ) )</code></pre>
+<h2 id="generation-of-random-matrices">Generation of random matrices</h2>
+<p>For simplicity only the &quot;pure association lists&quot; of matrices are generated, which are represented by the stacked association lists. Values of the type <code class="sourceCode haskell"><span class="dt">MatLike</span> a</code> are required to satisfy the following two conditions:</p>
+<ul>
+<li>Its indices are exactly <span class="math">\(0\)</span> to <span class="math">\(n - 1\)</span> for some <span class="math">\(n \in \mathbb N\)</span> in precisely this order.</li>
+<li>The value at every index is an association list that is sorted with respect to its indices.</li>
+</ul>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">MatLike</span> a <span class="fu">=</span> [(<span class="dt">Int</span>, [(<span class="dt">Int</span>, a)])]</code></pre>
+<p>This function generates the necessary values. First, it creates a table of the right size and fills it with the correct number of &quot;non-zero&quot; values at the first positions and with &quot;zeroes&quot; at the remaining positions. Then it uses the supplied random generator to shuffle the table. Finally, the table is reduced to an association list. Any density larger than 1 behaves as 1 and every density smaller than 0 behaves as 0.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">randomMatLikeWith ::</span> (<span class="dt">RandomGen</span> g, <span class="dt">Random</span> a) <span class="ot">=&gt;</span>
+    g                        <span class="co">-- ^ random generator</span>
+ <span class="ot">-&gt;</span> <span class="dt">Int</span>                      <span class="co">-- ^ number of rows</span>
+ <span class="ot">-&gt;</span> <span class="dt">Int</span>                      <span class="co">-- ^ number of columns</span>
+ <span class="ot">-&gt;</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>)      <span class="co">-- ^ function that computes the number of entries</span>
+                             <span class="co">--   in the matrix, i.e. @(*)@</span>
+ <span class="ot">-&gt;</span> ([<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a) <span class="co">-- ^ function that splits the overall list into</span>
+                             <span class="co">--   sublists which then become rows</span>
+ <span class="ot">-&gt;</span> <span class="dt">Double</span>                   <span class="co">-- ^ density, i.e. percentage of edges, which is</span>
+                             <span class="co">--   a &#39;Double&#39; value between /0/ and /1/</span>
+ <span class="ot">-&gt;</span> (a, a)                   <span class="co">-- ^ Lower\/upper bounds for the random values</span>
+ <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+randomMatLikeWith g rs cs size resize d lu <span class="fu">=</span> resize shuffled <span class="kw">where</span>
+    shuffled <span class="fu">=</span> shuffle&#39; toGo entries g2
+    entries  <span class="fu">=</span> size cs rs
+    fill     <span class="fu">=</span> floor (fromIntegral entries <span class="fu">*</span> d)
+    toGo     <span class="fu">=</span>    map <span class="dt">Just</span> (take fill (randomRs lu g1)) <span class="co">-- \&quot;interesting\&quot; values</span>
+               <span class="fu">++</span> replicate (entries <span class="fu">-</span> fill) <span class="dt">Nothing</span>    <span class="co">-- \&quot;zeroes\&quot;</span>
+    (g1, g2) <span class="fu">=</span> split g</code></pre>
+<p>This function creates a random matrix by computing the necessary number of entries, then shuffling them and finally splitting them into uniform chunks which are then used as rows.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">randomMatLike <span class="ot">::</span>
+    (<span class="dt">RandomGen</span> g, <span class="dt">Random</span> a) <span class="ot">=&gt;</span> g            <span class="co">-- ^ random generator</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Int</span>          <span class="co">-- ^ number of rows</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Int</span>          <span class="co">-- ^ number of colums</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Double</span>       <span class="co">-- ^ density (/0 &lt;= d &lt;= 1/)</span>
+                            <span class="ot">-&gt;</span> (a, a)       <span class="co">-- ^ lower\/upper bounds</span>
+                            <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+randomMatLike gen rows cols <span class="fu">=</span> randomMatLikeWith gen rows cols (<span class="fu">*</span>) (resizeWith (chopUniform cols))</code></pre>
+<p>A random graph is a random matrix with the same number of rows and columns.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">randomSquareMatLike <span class="ot">::</span>
+    (<span class="dt">RandomGen</span> g, <span class="dt">Random</span> a) <span class="ot">=&gt;</span> g            <span class="co">-- ^ random generator</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Int</span>          <span class="co">-- ^ number of rows and columns</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Double</span>       <span class="co">-- ^ density (/0 &lt;= d &lt;= 1/)</span>
+                            <span class="ot">-&gt;</span> (a, a)       <span class="co">-- ^ lower\/upper bounds</span>
+                            <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+randomSquareMatLike gen size <span class="fu">=</span> randomMatLike gen size size</code></pre>
+<p>A random relation is a special case of a matrix where entries are either existent or not. Existent entries are denoted by the value (), non-existent entries are simply not contained in the corresponding list.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">randomRelationLike <span class="ot">::</span>
+    <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> g              <span class="co">-- ^ random generator</span>
+                <span class="ot">-&gt;</span> <span class="dt">Int</span>            <span class="co">-- ^ number of rows</span>
+                <span class="ot">-&gt;</span> <span class="dt">Int</span>            <span class="co">-- ^ number of columns</span>
+                <span class="ot">-&gt;</span> <span class="dt">Double</span>         <span class="co">-- ^ density (/0 &lt;= d &lt;= 1/)</span>
+                <span class="ot">-&gt;</span> <span class="dt">MatLike</span> ()
+randomRelationLike gen rows cols dens <span class="fu">=</span> randomMatLike gen rows cols dens ((), ())</code></pre>
+<p>Creates a random diagonal square matrix. Please note that the density is computed w.r.t. the diagonal and /not/ the number of entries altogether. That is: <code class="sourceCode haskell">randomDiagonal (mkStdGen <span class="dv">1234</span>) <span class="dv">10</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">3</span> (<span class="dv">0</span>, <span class="dv">1</span>)</code> will create a square matrix with exactly three (not thirty) entries.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">randomDiagonalLike <span class="ot">::</span>
+    (<span class="dt">RandomGen</span> g, <span class="dt">Random</span> a) <span class="ot">=&gt;</span> g            <span class="co">-- ^ random generator</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Int</span>          <span class="co">-- ^ number of rows and columns</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Double</span>       <span class="co">-- ^ density (/0 &lt;= d &lt;= 1/)</span>
+                            <span class="ot">-&gt;</span> (a, a)       <span class="co">-- ^ lower\/upper bounds</span>
+                            <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+randomDiagonalLike gen size <span class="fu">=</span> randomMatLikeWith gen size size const resize <span class="kw">where</span>
+
+    resize <span class="fu">=</span> zipWith (\i mv <span class="ot">-&gt;</span> (i, maybe [] (\v <span class="ot">-&gt;</span> [(i, v)]) mv)) [<span class="dv">0</span><span class="fu">..</span>]</code></pre>
+<p>Creates a random triangle square matrix. As with <code class="sourceCode haskell">randomDiagonal</code> the density refers to the density of the triangle. That is the number of entries in the matrix will be <code class="sourceCode haskell">floor (density <span class="fu">*</span> size <span class="fu">*</span> (size <span class="fu">+</span> <span class="dv">1</span>) <span class="fu">/</span> <span class="dv">2</span>)</code>.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">randomTriangleLike <span class="ot">::</span>
+    (<span class="dt">RandomGen</span> g, <span class="dt">Random</span> a) <span class="ot">=&gt;</span> g            <span class="co">-- ^ random generator</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Int</span>          <span class="co">-- ^ number of rows and columns</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Double</span>       <span class="co">-- ^ density (/0 &lt;= d &lt;= 1/)</span>
+                            <span class="ot">-&gt;</span> (a, a)       <span class="co">-- ^ lower\/upper bounds</span>
+                            <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+randomTriangleLike gen size <span class="fu">=</span> randomMatLikeWith gen size size f (resizeWith chopTriangle) <span class="kw">where</span>
+
+    f n _ <span class="fu">=</span> n <span class="fu">*</span> (n <span class="fu">+</span> <span class="dv">1</span>) <span class="ot">`div`</span> <span class="dv">2</span></code></pre>
+<p>Creates a random strict triangle matrix (no entries at the diagonal). The density refers to the density of the strict triangle, that is the number of entries is 'floor (density * size * (size - 1) / 2)`{.haskell}.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell">randomStrictTriangleLike <span class="ot">::</span>
+    (<span class="dt">RandomGen</span> g, <span class="dt">Random</span> a) <span class="ot">=&gt;</span> g            <span class="co">-- ^ random generator</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Int</span>          <span class="co">-- ^ number of rows and columns</span>
+                            <span class="ot">-&gt;</span> <span class="dt">Double</span>       <span class="co">-- ^ density (/0 &lt;= d &lt;= 1/)</span>
+                            <span class="ot">-&gt;</span> (a, a)       <span class="co">-- ^ lower\/upper bounds</span>
+                            <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+randomStrictTriangleLike gen size <span class="fu">=</span> randomMatLikeWith gen size size f (resizeWith chopStrictTriangle)
+    <span class="kw">where</span> f n _ <span class="fu">=</span> n <span class="fu">*</span> (n <span class="fu">-</span> <span class="dv">1</span>) <span class="ot">`div`</span> <span class="dv">2</span></code></pre>
+<h2 id="random-instances">Random instances</h2>
+<p><code class="sourceCode haskell"><span class="dt">Random</span></code> instance for pairs of Random instances that simply generates two values in sequence.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">Random</span> a, <span class="dt">Random</span> b) <span class="ot">=&gt;</span> <span class="dt">Random</span> (a, b) <span class="kw">where</span>
+
+    randomR ((la, lb), (ua, ub)) g <span class="fu">=</span> ((x, y), g&#39;&#39;)
+        <span class="kw">where</span> (x, g&#39;)  <span class="fu">=</span> randomR (la, ua) g
+              (y, g&#39;&#39;) <span class="fu">=</span> randomR (lb, ub) g&#39;
+
+    random g <span class="fu">=</span> ((x, y), g&#39;&#39;) <span class="kw">where</span>
+        (x, g&#39;)  <span class="fu">=</span> random g
+        (y, g&#39;&#39;) <span class="fu">=</span> random g&#39;</code></pre>
+<p>Random instance for the semiring of <code class="sourceCode haskell"><span class="dt">Number</span></code>s, which simply wraps the creation of a value into a <code class="sourceCode haskell"><span class="dt">Number</span></code> constructor.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Random</span> a <span class="ot">=&gt;</span> <span class="dt">Random</span> (<span class="dt">Number</span> a) <span class="kw">where</span>
+
+    randomR (l, u) g <span class="fu">=</span> (<span class="dt">Number</span> x, g&#39;)
+        <span class="kw">where</span> (x, g&#39;) <span class="fu">=</span> randomR (number l, number u) g
+
+    random g <span class="fu">=</span> (<span class="dt">Number</span> x, g&#39;)
+        <span class="kw">where</span> (x, g&#39;) <span class="fu">=</span> random g</code></pre>
+<p>Random instance for <code class="sourceCode haskell">()</code>, which is trivial and deterministic.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Random</span> () <span class="kw">where</span>
+
+    random g   <span class="fu">=</span> ((), fst (split g))
+    randomR _  <span class="fu">=</span> random
+    randoms _  <span class="fu">=</span> repeat ()
+    randomRs _ <span class="fu">=</span> randoms</code></pre>
+<h2 id="auxiliary-functions">Auxiliary functions</h2>
+<p>Given a function, an integer and a list, this function breaks the list in sublists. The given function is used to determine the length of the next chunk. For instance:</p>
+<ul>
+<li><code class="sourceCode haskell">breakWith id    <span class="dv">3</span> <span class="st">&quot;Explanation&quot;</span> <span class="fu">==</span> [<span class="st">&quot;Exp&quot;</span>,<span class="st">&quot;lan&quot;</span>,<span class="st">&quot;ati&quot;</span>,<span class="st">&quot;on&quot;</span>]</code></li>
+<li><code class="sourceCode haskell">breakWith (<span class="fu">+</span> <span class="dv">1</span>) <span class="dv">1</span> <span class="st">&quot;Explanation&quot;</span> <span class="fu">==</span> [<span class="st">&quot;E&quot;</span>,<span class="st">&quot;xp&quot;</span>,<span class="st">&quot;lan&quot;</span>,<span class="st">&quot;atio&quot;</span>,<span class="st">&quot;n&quot;</span>]</code></li>
+</ul>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">breakWith ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [[a]]
+breakWith f <span class="fu">=</span> go <span class="kw">where</span>
+
+    go _ [] <span class="fu">=</span> []
+    go n xs <span class="fu">=</span> take n xs <span class="fu">:</span> go (f n) (drop n xs)</code></pre>
+<p>Given an integer <span class="math">\(n\)</span> and a list this function breaks the list into chunks of length <span class="math">\(n\)</span>. The last chunk is shorter, iff the length of the given list is not a multiple of <span class="math">\(n\)</span>.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">chopUniform ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [[a]]
+chopUniform <span class="fu">=</span> breakWith id</code></pre>
+<p>This function chops a given list into sublists of increasing length beginning with 1. The last element is shorter than the second to last, if the length of the list is not <span class="math">\(n\cdot(n+1)/2\)</span> for some <span class="math">\(n \in \mathbb N\)</span>.</p>
+<p>The name of the function hints at its use, since one can use the resulting chunks to fill a lower triangle matrix.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">chopTriangle ::</span> [a] <span class="ot">-&gt;</span> [[a]]
+chopTriangle <span class="fu">=</span> breakWith (<span class="fu">+</span> <span class="dv">1</span>) <span class="dv">1</span></code></pre>
+<p>This function behaves very similarly to <code class="sourceCode haskell">chopTriangle</code>, but its first list is empty. The last element of this list is shorter than the second to last iff the list length is not <span class="math">\(n\cdot(n+1)/2\)</span> for some integer <span class="math">\(n \in \mathbb N\)</span>.</p>
+<p>Again, the name hints at the function's application, namely the construction of a strict lower triangle matrix.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">chopStrictTriangle ::</span> [a] <span class="ot">-&gt;</span> [[a]]
+chopStrictTriangle <span class="fu">=</span> breakWith (<span class="fu">+</span><span class="dv">1</span>) <span class="dv">0</span></code></pre>
+<p>One particular recurring scheme is to split a list of <code>Maybe a</code> values into lists of such values and then transform these lists into rows. This scheme is captured by the following function.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">resizeWith ::</span> ([<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> [[<span class="dt">Maybe</span> a]]) <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a
+resizeWith f <span class="fu">=</span> zip [<span class="dv">0</span> <span class="fu">..</span> ] <span class="fu">.</span> map toRow <span class="fu">.</span> f</code></pre>
+<p>This function transforms a list of <code class="sourceCode haskell"><span class="dt">Maybe</span></code> values into an association list by first indexing the list and then removing the <code class="sourceCode haskell"><span class="dt">Nothing</span></code> values. For example,</p>
+<ul>
+<li><code class="sourceCode haskell">toRow [<span class="dt">Just</span> <span class="ch">&#39;h&#39;</span>, <span class="dt">Nothing</span>, <span class="dt">Just</span> <span class="ch">&#39;i&#39;</span>] <span class="fu">==</span> [(<span class="dv">0</span>, <span class="ch">&#39;h&#39;</span>), (<span class="dv">2</span>, <span class="ch">&#39;i&#39;</span>)]</code></li>
+</ul>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">toRow ::</span> [<span class="dt">Maybe</span> a] <span class="ot">-&gt;</span> [(<span class="dt">Int</span>, a)]
+toRow <span class="fu">=</span> mapMaybe (uncurry (fmap <span class="fu">.</span> (,))) <span class="fu">.</span> zip [<span class="dv">0</span> <span class="fu">..</span> ]</code></pre>
+</body>
+</html>
