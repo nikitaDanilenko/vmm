@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>Semiring typeclass and instances</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
@@ -27,13 +27,15 @@ code > span.er { color: #ff0000; font-weight: bold; }
   </style>
 </head>
 <body>
+<div id="header">
+<h1 class="title">Semiring typeclass and instances</h1>
+</div>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# Language GeneralizedNewtypeDeriving #-}</span>
 
 <span class="kw">module</span> <span class="dt">Semiring</span> <span class="kw">where</span>
 
 <span class="kw">import </span><span class="dt">Data.Monoid</span> ( <span class="dt">Monoid</span> ( .. ) )
 <span class="kw">import </span><span class="dt">Data.Ord</span>    ( comparing )</code></pre>
-<h2 id="semiring-typeclass-and-instances">Semiring typeclass and instances</h2>
 <p>The semiring typeclass. The same definition is used <a href="http://hackage.haskell.org/package/weighted-regexp">here</a>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Semiring</span> s <span class="kw">where</span>
   (<span class="fu">.+.</span>),<span class="ot"> (.*.) ::</span> s <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> s
@@ -72,8 +74,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
     compare <span class="dt">MaxWeight</span>  _           <span class="fu">=</span> <span class="dt">GT</span>
     compare _          <span class="dt">MaxWeight</span>   <span class="fu">=</span> <span class="dt">LT</span>
     compare w          w&#39;          <span class="fu">=</span> comparing weight w w&#39;</code></pre>
-<p><code class="sourceCode haskell"><span class="dt">Tropical</span> w</code> forms a semiring if <code>w</code> has an <code class="sourceCode haskell"><span class="dt">Ord</span></code> and a <code class="sourceCode haskell"><span class="dt">Monoid</span></code> instance that satisfy</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"> forall x,<span class="ot"> y ::</span> w <span class="fu">.</span> x <span class="fu">&lt;=</span> x <span class="ot">`mappend`</span> y<span class="ot">`</span></code></pre>
+<p><code class="sourceCode haskell"><span class="dt">Tropical</span> w</code> forms a semiring if <code>w</code> has an <code class="sourceCode haskell"><span class="dt">Ord</span></code> and a <code class="sourceCode haskell"><span class="dt">Monoid</span></code> instance that satisfy <code>forall x, y :: w . x &lt;= x `mappend` y</code></p>
 <p>This condition is <em>not</em> satisfied in case of the additive monoid of most numerical values, because adding negative numbers makes values smaller.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="co">-- assuming the expansion property</span>
 <span class="kw">instance</span> (<span class="dt">Ord</span> w, <span class="dt">Monoid</span> w) <span class="ot">=&gt;</span> <span class="dt">Semiring</span> (<span class="dt">Tropical</span> w) <span class="kw">where</span>
