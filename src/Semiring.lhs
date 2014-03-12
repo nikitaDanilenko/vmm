@@ -1,4 +1,5 @@
-% Semiring typeclass and instances
+Semiring typeclass and instances
+================================
 
 > {-# Language GeneralizedNewtypeDeriving #-}
 > 
