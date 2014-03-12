@@ -9,9 +9,9 @@ This document contains a slightly elaborated version of the code presented in
 
 This module uses the separated modules
 
-* [`Semiring`{.haskell}](./Semiring.html)
+* [`Semiring`](./Semiring.html)
   that contains the semiring type class and some exemplary instances and
-* [`RandomMatrix`{.haskell}](./RandomMatrix.html)
+* [`RandomMatrix`](./RandomMatrix.html)
   that allows the creation of matrices that are generated randomly.
 
 ~~~{.haskell}
@@ -45,7 +45,7 @@ type Arc a    = (Int, a)
 newtype Vec a = Vec { unVec :: [Arc a] }
 ~~~
 
-A pretty-printing `Show`{.haskell}-instance for vectors.
+A pretty-printing `Show`-instance for vectors.
 
 ~~~{.haskell}
 instance Show a => Show (Vec a) where
@@ -54,7 +54,7 @@ instance Show a => Show (Vec a) where
     where showElem (i, x) ixs = unwords ["(", show i, "|", show x, ")", ixs]
 ~~~
 
-The `Functor`{.haskell} instance maps the given function over every value (i.e. second component) in
+The `Functor` instance maps the given function over every value (i.e. second component) in
 the association list.
 
 ~~~{.haskell}
@@ -65,9 +65,9 @@ instance Functor Vec where
 
 For example we have the following result:
 
-* `fmap chr (Vec [(2, 109), (3, 97), (5, 112)]) == Vec [(2, 'm'), (3, 'a'), (5, 'p')]`{.haskell}
+* `fmap chr (Vec [(2, 109), (3, 97), (5, 112)]) == Vec [(2, 'm'), (3, 'a'), (5, 'p')]`
 
-We use the constant `emptyVec`{.haskell} for abbreviation.
+We use the constant `emptyVec` for abbreviation.
 
 ~~~{.haskell}
 emptyVec :: Vec a
@@ -98,14 +98,14 @@ toVecWith :: a -> [Vertex] -> Vec a
 toVecWith = toVecFrom . const
 ~~~
 
-Using `()`{.haskell} as a specific value is realised as follows.
+Using `()` as a specific value is realised as follows.
 
 ~~~{.haskell}
 toVec :: [Vertex] -> Vec ()
 toVec = toVecWith ()
 ~~~
 
-Finally, using a `one`{.haskell} of some semiring is useful in an algebraic context.
+Finally, using a `one` of some semiring is useful in an algebraic context.
 
 ~~~{.haskell}
 toVec1 :: Semiring s => [Vertex] -> Vec s
@@ -123,7 +123,7 @@ Set operations on vectors
 -------------------------
 
 Set operations on vectors can be easily defined using a merging technique similar to the one in
-`Data.IntMap`{.haskell}. To avoid boilerplate code we parametrise merging as follows:
+`Data.IntMap`. To avoid boilerplate code we parametrise merging as follows:
 
 ~~~{.haskell}
 mergeWith :: ([Arc b] -> [c])               -- ^ left list is empty
@@ -177,7 +177,7 @@ leftmostUnion = bigUnionWith const
 ~~~
 
 The intersection function for intersecting association lists using a user supplied combination
-function. It is very similar to `zipWith`{.haskell}.
+function. It is very similar to `zipWith`.
 
 ~~~{.haskell}
 intersectionWithKey :: (Int -> a -> b -> c) -> Vec a -> Vec b -> [c]
@@ -206,7 +206,7 @@ Matrices and the multiplication generators
 ------------------------------------------
 
 Matrices are wrapped in an additional newtype (contrary to the definition in the paper) to allow a
-pretty-printing `Show`{.haskell} instance.
+pretty-printing `Show` instance.
 
 ~~~{.haskell}
 newtype Mat a  = Mat { matrix :: Vec (Vec a) }
@@ -217,7 +217,7 @@ instance Show a => Show (Mat a) where
     f j r = unwords [show j, ":", show r]
 ~~~
 
-Matrices also have a natural `Functor`{.haskell} instance that uses the corresponding vector
+Matrices also have a natural `Functor` instance that uses the corresponding vector
 instance twice.
 
 ~~~{.haskell}
@@ -269,7 +269,7 @@ This function is the usual multiplication of a vector with a matrix in the conte
 (.*) = vecMatMult (bigUnionWith (.+.)) (sMultWith (\ _ x y -> x .*. y))
 ~~~
 
-Assuming an additional `Eq`{.haskell} constraint we can define the predicates
+Assuming an additional `Eq` constraint we can define the predicates
 
 ~~~{.haskell}
 isZero :: (Semiring s, Eq s) => s -> Bool
@@ -279,17 +279,17 @@ isOne :: (Semiring s, Eq s) => s -> Bool
 isOne = (one ==)
 ~~~
 
-that check whether a semiring element is `zero`{.haskell} or `one`{.haskell}. Alternatively, one can
+that check whether a semiring element is `zero` or `one`. Alternatively, one can
 require these predicates to be part of the semiring type class.
 
-This function removes all pairs from a vector whose value is `zero`{.haskell}.
+This function removes all pairs from a vector whose value is `zero`.
 
 ~~~{.haskell}
 nonZero :: (Semiring s, Eq s) => Vec s -> Vec s
 nonZero = Vec . filter (not . isZero . snd) . unVec
 ~~~
 
-This is a variant of `(.*)`{.haskell} that uses algebraic laws to avoid zeroes in the result vector
+This is a variant of `(.*)` that uses algebraic laws to avoid zeroes in the result vector
 as well as avoiding possibly unnecessary computations.
 
 ~~~{.haskell}
@@ -312,7 +312,7 @@ v .-> m = fromVec (toVec v .*> m)
 ~~~
 
 The actual multiplication is pseudo-Boolean: every performed multiplication is essentially a
-multiplication by `one`{.haskell}.
+multiplication by `one`.
 
 ~~~{.haskell}
 (.*>) :: Vec s -> Mat a -> Vec a
@@ -320,7 +320,7 @@ multiplication by `one`{.haskell}.
 ~~~
 
 This is an algebraic version of the successor multiplication. The underlying semiring needs to be
-idempotent, i.e. `x .+. x == x`{.haskell} for all `x :: s`.
+idempotent, i.e. `x .+. x == x` for all `x :: s`.
 
 ~~~{.haskell}
 (.->*) :: Semiring s => [Vertex] -> Mat s -> [Vertex]
@@ -347,7 +347,7 @@ v .# m = toVecWith 0 v .*# m
 ~~~
 
 The underlying multiplication of this function is the following one. It maps every value that is
-encountered in the adjacency list of a vertex to `1`{.haskell} and then uses numerical addition
+encountered in the adjacency list of a vertex to `1` and then uses numerical addition
 to add the resulting ones.
 
 ~~~{.haskell}
@@ -377,7 +377,7 @@ given vector is non-empty.
 Prolonging a single path
 ------------------------
 
-Vertex paths are represented by a `Seq`{.haskell}.
+Vertex paths are represented by a `Seq`.
 
 ~~~{.haskell}
 type Path = Seq Vertex
@@ -411,14 +411,14 @@ the graph represented by the given matrix.
 (.*~~) = vecMatMult allUnion pathsMul
 ~~~
 
-The `allUnion`{.haskell} function collects all results in their order of occurrence.
+The `allUnion` function collects all results in their order of occurrence.
 
 ~~~{.haskell}
 allUnion :: [Vec [a]] -> Vec [a]
 allUnion = bigUnionWith (++)
 ~~~
 
-Similarly to the `pathMul`{.haskell} function, the following function prolongs all paths instead
+Similarly to the `pathMul` function, the following function prolongs all paths instead
 of just one.
 
 ~~~{.haskell}
@@ -430,7 +430,7 @@ Outgoing values
 ---------------
 
 The following multiplication computes the successors of a vertex and adds all predecessors and
-their corresponding values to the `Arc`{.haskell}-list at the respective index.
+their corresponding values to the `Arc`-list at the respective index.
 
 ~~~{.haskell}
 (.*||) :: Vec [Arc a] -> Mat a -> Vec [Arc a]
@@ -454,8 +454,8 @@ transpose mat = Mat (fmap Vec ((vertices .*|| mat) \\/ vertices)) where
 ~~~
 
 It is possible to define a very similar function that computes the transposition of a heterogeneous
-matrix by adding an additional `Int`{.haskell} argument that denotes the number of columns. This
-number can then be used in the "correction" step (application of `(\\/)`{.haskell}) to add the
+matrix by adding an additional `Int` argument that denotes the number of columns. This
+number can then be used in the "correction" step (application of `(\\/)`) to add the
 correct number of columns.
 
 ~~~{.haskell}
@@ -479,7 +479,7 @@ through the graph.
 
 The scalar multiplication labels every successor of a given vertex with a forest starting in that
 vertex that leads to the successor. The concatenation of all these forests is then the result and
-is computed above by using `allUnion`{.haskell}.
+is computed above by using `allUnion`.
 
 ~~~{.haskell}
 fMult :: Vertex -> Forest Vertex -> Vec a -> Vec (Forest Vertex)
@@ -532,7 +532,7 @@ Maximal Set of Pairwise Disjoint Shortest Paths
 ===============================================
 
 The computation of a maximal set of pairwise disjoint shortest paths between two vertex sets is
-realised by computing the reachability forest with the `reachForest`{.haskell} function and then
+realised by computing the reachability forest with the `reachForest` function and then
 pruning it with the following strategy. If there is no tree left, there no path left in the forest.
 If on the other hand there is a leftmost tree, check whether its root node is visited. If it is,
 continue with the remainder of the forest. If it's not, then visit this vertex. Next compute a path
@@ -554,10 +554,10 @@ chop (Node v ts : fs) = do b <- lift (contains v)
 ~~~
 
 The actual disjoint paths function computes the reachability forest and then prunes every single
-forest `[Node i f]`{.haskell} where `(i, f) :: Arc (Forest Vertex)`{.haskell} is a vertex-value
-pair that is contained in the result vector of `reachForest`{.haskell}. Finally, the monadic set
-that is used for the computation is "left" and the resulting list of `Maybe Path`{.haskell} values
-is transformed into a list of paths by `catMaybes`{.haskell}.
+forest `[Node i f]` where `(i, f) :: Arc (Forest Vertex)` is a vertex-value
+pair that is contained in the result vector of `reachForest`. Finally, the monadic set
+that is used for the computation is "left" and the resulting list of `Maybe Path` values
+is transformed into a list of paths by `catMaybes`.
 
 ~~~{.haskell}
 disjointPaths :: Int      -- number of vertices in the graph(s)
@@ -574,9 +574,9 @@ Monadic set interface
 ---------------------
 
 The following monadic set interface is very similar to the one in
-[`Data.Graph`{.haskell}](http://hackage.haskell.org/package/containers-0.5.4.0/docs/Data-Graph.html).
-and can be replaced with a pure set representation by `Data.IntSet`{.haskell}.
-All of the definitions below are almost identical to the ones from `Data.Graph`{.haskell}.
+[`Data.Graph`](http://hackage.haskell.org/package/containers-0.5.4.0/docs/Data-Graph.html).
+and can be replaced with a pure set representation by `Data.IntSet`.
+All of the definitions below are almost identical to the ones from `Data.Graph`.
 
 ~~~{.haskell}
 newtype SetM a = Set { runSet :: forall s . STArray s Int Bool -> ST s a }
@@ -612,7 +612,7 @@ include :: Int -> SetM ()
 include x = Set (\arr -> writeArray arr x True)
 ~~~
 
-Produces the value associated with the given set. The `Int`{.haskell} denotes the size of the set.
+Produces the value associated with the given set. The `Int` denotes the size of the set.
 
 ~~~{.haskell}
 runNew :: Int -> SetM a -> a
@@ -665,8 +665,8 @@ mat2 = Mat $ Vec [(0, Vec [(3,'g')]),
 ~~~
 
 
-These two matrices are structurally identical, but the first one contains `Char`{.haskell} values,
-while the second one contains only ones of the type `Number Int`{.haskell}. These two correspond
+These two matrices are structurally identical, but the first one contains `Char` values,
+while the second one contains only ones of the type `Number Int`. These two correspond
 to the graphs $G'$ and $G$ from Section 1.
 
 ![Graph $G'$](./graphLabelled.png)
@@ -689,8 +689,8 @@ graphNumber :: Mat (Number Int)
 graphNumber = fmap (const 1) graphChar
 ~~~
 
-These two vectors are structurally identical, but the first one contains only `()`{.haskell}
-values and the second one contains only ones of the type `Number Int`{.haskell}. Both are variants
+These two vectors are structurally identical, but the first one contains only `()`
+values and the second one contains only ones of the type `Number Int`. Both are variants
 of the vector $v_X$ from Section 1.
 
 ~~~{.haskell}
@@ -715,7 +715,7 @@ randomGraph :: Random a => Int     -- ^ random generator number
 randomGraph = matlikeToMat randomSquareMatLike
 ~~~
 
-The following function takes a `MatLike a`{.haskell} value and transforms it into
+The following function takes a `MatLike a` value and transforms it into
 an actual matrix.
 
 ~~~{.haskell}
