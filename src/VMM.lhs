@@ -508,14 +508,12 @@ Example Matrices and Vectors
 Examples by hand
 ----------------
 
-This is the matrix $A$ from Section 3 of the paper:
+This is the matrix *A* from Section 3 of the paper:
 
-$$ A= \begin{pmatrix}
-            0 & 1 & 1\\
-           0 & 0 & 1\\
-            0 & 2 & 0
-     \end{pmatrix}
-$$
+> --     |0  1  1|
+> -- A = |0  0  1|
+> --     |0  2  0|
+
  
 > matA :: Mat Int
 > matA = Mat $ Vec [(0, Vec [(1, 1), (2, 1)]),
@@ -546,11 +544,11 @@ Two arbitrary matrices.
 
 These two matrices are structurally identical, but the first one contains `Char` values,
 while the second one contains only ones of the type `Number Int`. These two correspond
-to the graphs $G'$ and $G$ from Section 1.
+to the graphs *G'* and *G* from Section 1.
 
-![Graph $G'$](./graphLabelled.png)
+![Graph *G'*](./graphLabelled.png)
 
-![Graph $G$](./graph.png)
+![Graph *G*](./graph.png)
 
 > graphChar :: Mat Char
 > graphChar = Mat $ Vec [(0, Vec []),
@@ -568,7 +566,7 @@ to the graphs $G'$ and $G$ from Section 1.
 
 These two vectors are structurally identical, but the first one contains only `()`
 values and the second one contains only ones of the type `Number Int`. Both are variants
-of the vector $v_X$ from Section 1.
+of the vector *v_X* from Section 1.
 
 > vec :: Vec ()
 > vec = toVec [1,2,6]

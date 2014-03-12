@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <title></title>
+  <title>Vector-matrix multiplications</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
@@ -28,7 +28,9 @@ code > span.er { color: #ff0000; font-weight: bold; }
   <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 </head>
 <body>
-<h1 id="vector-matrix-multiplications">Vector-matrix multiplications</h1>
+<div id="header">
+<h1 class="title">Vector-matrix multiplications</h1>
+</div>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">{-# Language Rank2Types #-}</span></code></pre>
 <p>This document contains a slightly elaborated version of the code presented in <em>Graph Problems and Vector-Matrix Multiplications in Haskell</em>.</p>
 <p>This module uses the separated modules</p>
@@ -68,9 +70,9 @@ code > span.er { color: #ff0000; font-weight: bold; }
  fmap f <span class="fu">=</span> <span class="dt">Vec</span> <span class="fu">.</span> map (second f) <span class="fu">.</span> unVec</code></pre>
 <p>For example we have the following result:</p>
 <ul>
-<li><code>fmap chr (Vec [(2, 109), (3, 97), (5, 112)]) == Vec [(2, 'm'), (3, 'a'), (5, 'p')]</code></li>
+<li><code class="sourceCode haskell">fmap chr (<span class="dt">Vec</span> [(<span class="dv">2</span>, <span class="dv">109</span>), (<span class="dv">3</span>, <span class="dv">97</span>), (<span class="dv">5</span>, <span class="dv">112</span>)]) <span class="fu">==</span> <span class="dt">Vec</span> [(<span class="dv">2</span>, <span class="ch">&#39;m&#39;</span>), (<span class="dv">3</span>, <span class="ch">&#39;a&#39;</span>), (<span class="dv">5</span>, <span class="ch">&#39;p&#39;</span>)]</code></li>
 </ul>
-<p>We use the constant <code>emptyVec</code> for abbreviation.</p>
+<p>We use the constant <code class="sourceCode haskell">emptyVec</code> for abbreviation.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">emptyVec ::</span> <span class="dt">Vec</span> a
 emptyVec <span class="fu">=</span> <span class="dt">Vec</span> []</code></pre>
 <p>This function checks whether the wrapped association list of a vector is empty.</p>
@@ -82,7 +84,7 @@ toVecFrom f <span class="fu">=</span> <span class="dt">Vec</span> <span class="f
 <p>Using the same value for every vertex is the simplest case.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">toVecWith ::</span> a <span class="ot">-&gt;</span> [<span class="dt">Vertex</span>] <span class="ot">-&gt;</span> <span class="dt">Vec</span> a
 toVecWith <span class="fu">=</span> toVecFrom <span class="fu">.</span> const</code></pre>
-<p>Using <code>()</code> as a specific value is realised as follows.</p>
+<p>Using <code class="sourceCode haskell">()</code> as a specific value is realised as follows.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">toVec ::</span> [<span class="dt">Vertex</span>] <span class="ot">-&gt;</span> <span class="dt">Vec</span> ()
 toVec <span class="fu">=</span> toVecWith ()</code></pre>
 <p>Finally, using a <code>one</code> of some semiring is useful in an algebraic context.</p>
@@ -122,7 +124,7 @@ bigUnionWith op <span class="fu">=</span> foldr (unionWith op) emptyVec</code></
 <p>The repeated application is then the leftmost union that is just as simple to define.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">leftmostUnion ::</span> [<span class="dt">Vec</span> a] <span class="ot">-&gt;</span> <span class="dt">Vec</span> a
 leftmostUnion <span class="fu">=</span> bigUnionWith const</code></pre>
-<p>The intersection function for intersecting association lists using a user supplied combination function. It is very similar to <code>zipWith</code>.</p>
+<p>The intersection function for intersecting association lists using a user supplied combination function. It is very similar to <code class="sourceCode haskell">zipWith</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">intersectionWithKey ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> <span class="dt">Vec</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> b <span class="ot">-&gt;</span> [c]
 intersectionWithKey f (<span class="dt">Vec</span> xs) (<span class="dt">Vec</span> ys) <span class="fu">=</span> go xs ys <span class="kw">where</span>
   go <span class="fu">=</span> mergeWith (const []) (const []) (\i x y r <span class="ot">-&gt;</span> f i x y <span class="fu">:</span> r) constFourth constFourth</code></pre>
@@ -134,21 +136,21 @@ v <span class="fu">//</span>\ w <span class="fu">=</span> <span class="dt">Vec</
 <span class="dt">Vec</span> xs \\ <span class="dt">Vec</span> ys <span class="fu">=</span> <span class="dt">Vec</span> (go xs ys) <span class="kw">where</span>
   go <span class="fu">=</span> mergeWith (const []) id constFourth (\i x _ r <span class="ot">-&gt;</span> (i, x) <span class="fu">:</span> r) constFourth</code></pre>
 <h2 id="matrices-and-the-multiplication-generators">Matrices and the multiplication generators</h2>
-<p>Matrices are wrapped in an additional newtype (contrary to the definition in the paper) to allow a pretty-printing <code>Show</code> instance.</p>
+<p>Matrices are wrapped in an additional newtype (contrary to the definition in the paper) to allow a pretty-printing <code class="sourceCode haskell"><span class="dt">Show</span></code> instance.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Mat</span> a  <span class="fu">=</span> <span class="dt">Mat</span> {<span class="ot"> matrix ::</span> <span class="dt">Vec</span> (<span class="dt">Vec</span> a) }
 
 <span class="kw">instance</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">Mat</span> a) <span class="kw">where</span>
 
   show <span class="fu">=</span> intercalate <span class="st">&quot;\n&quot;</span> <span class="fu">.</span> map (uncurry f) <span class="fu">.</span> unVec <span class="fu">.</span> matrix <span class="kw">where</span>
     f j r <span class="fu">=</span> unwords [show j, <span class="st">&quot;:&quot;</span>, show r]</code></pre>
-<p>Matrices also have a natural <code>Functor</code> instance that uses the corresponding vector instance twice.</p>
+<p>Matrices also have a natural <code class="sourceCode haskell"><span class="dt">Functor</span></code> instance that uses the corresponding vector instance twice.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Mat</span> <span class="kw">where</span>
 
     fmap f <span class="fu">=</span> <span class="dt">Mat</span> <span class="fu">.</span> fmap (fmap f) <span class="fu">.</span> matrix</code></pre>
-<p>Given a fixed value <code>x</code> this function provides a vector of vertices in the matrix where the value at every index is <code>x</code>.</p>
+<p>Given a fixed value <code class="sourceCode haskell">x</code> this function provides a vector of vertices in the matrix where the value at every index is <code class="sourceCode haskell">x</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">verticesWith ::</span> a <span class="ot">-&gt;</span> <span class="dt">Mat</span> b <span class="ot">-&gt;</span> <span class="dt">Vec</span> a
 verticesWith x <span class="fu">=</span> fmap (const x) <span class="fu">.</span> matrix</code></pre>
-<p>The scalar multiplication function. In the call <code>sMultWith times i x vec</code> the supplied &quot;multiplication&quot; <code>times</code> is applied to the &quot;uncurried scalar&quot; <code>(i, x)</code> and then mapped over every value in the vector <code>vec</code>.</p>
+<p>The scalar multiplication function. In the call <code class="sourceCode haskell">sMultWith times i x vec</code> the supplied &quot;multiplication&quot; <code class="sourceCode haskell">times</code> is applied to the &quot;uncurried scalar&quot; <code class="sourceCode haskell">(i, x)</code> and then mapped over every value in the vector <code class="sourceCode haskell">vec</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">sMultWith ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> u)<span class="ot">-&gt;</span>  <span class="dt">Int</span> <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">Vec</span> t <span class="ot">-&gt;</span> <span class="dt">Vec</span> u
 sMultWith mult i x <span class="fu">=</span> fmap (mult i x)</code></pre>
 <p>The actual vector matrix multiplication. It takes a generalised sum (first argument), a generalised scalar multiplication (second argument), a vector and a matrix and applies the sum function to the result of the intersection of the vector with the matrix, which in turn is obtained using the scalar multiplication function.</p>
@@ -159,16 +161,16 @@ vecMatMult bigsum sMult v m <span class="fu">=</span> bigsum (intersectionWithKe
 <p>This function is the usual multiplication of a vector with a matrix in the context of semirings.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*) ::</span> <span class="dt">Semiring</span> s <span class="ot">=&gt;</span> <span class="dt">Vec</span> s <span class="ot">-&gt;</span> <span class="dt">Mat</span> s <span class="ot">-&gt;</span> <span class="dt">Vec</span> s
 (<span class="fu">.*</span>) <span class="fu">=</span> vecMatMult (bigUnionWith (<span class="fu">.+.</span>)) (sMultWith (\ _ x y <span class="ot">-&gt;</span> x <span class="fu">.*.</span> y))</code></pre>
-<p>Assuming an additional <code>Eq</code> constraint we can define the predicates</p>
+<p>Assuming an additional <code class="sourceCode haskell"><span class="dt">Eq</span></code> constraint we can define the predicates</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">isZero ::</span> (<span class="dt">Semiring</span> s, <span class="dt">Eq</span> s) <span class="ot">=&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">Bool</span>
 isZero <span class="fu">=</span> (zero <span class="fu">==</span>)</code></pre>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">isOne ::</span> (<span class="dt">Semiring</span> s, <span class="dt">Eq</span> s) <span class="ot">=&gt;</span> s <span class="ot">-&gt;</span> <span class="dt">Bool</span>
 isOne <span class="fu">=</span> (one <span class="fu">==</span>)</code></pre>
-<p>that check whether a semiring element is <code>zero</code> or <code>one</code>. Alternatively, one can require these predicates to be part of the semiring type class.</p>
-<p>This function removes all pairs from a vector whose value is <code>zero</code>.</p>
+<p>that check whether a semiring element is <code class="sourceCode haskell">zero</code> or <code class="sourceCode haskell">one</code>. Alternatively, one can require these predicates to be part of the semiring type class.</p>
+<p>This function removes all pairs from a vector whose value is <code class="sourceCode haskell">zero</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">nonZero ::</span> (<span class="dt">Semiring</span> s, <span class="dt">Eq</span> s) <span class="ot">=&gt;</span> <span class="dt">Vec</span> s <span class="ot">-&gt;</span> <span class="dt">Vec</span> s
 nonZero <span class="fu">=</span> <span class="dt">Vec</span> <span class="fu">.</span> filter (not <span class="fu">.</span> isZero <span class="fu">.</span> snd) <span class="fu">.</span> unVec</code></pre>
-<p>This is a variant of <code>(.*)</code> that uses algebraic laws to avoid zeroes in the result vector as well as avoiding possibly unnecessary computations.</p>
+<p>This is a variant of <code class="sourceCode haskell">(<span class="fu">.*</span>)</code> that uses algebraic laws to avoid zeroes in the result vector as well as avoiding possibly unnecessary computations.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.**) ::</span> (<span class="dt">Semiring</span> s, <span class="dt">Eq</span> s) <span class="ot">=&gt;</span> <span class="dt">Vec</span> s <span class="ot">-&gt;</span> <span class="dt">Mat</span> s <span class="ot">-&gt;</span> <span class="dt">Vec</span> s
 (<span class="fu">.**</span>) <span class="fu">=</span> vecMatMult (nonZero <span class="fu">.</span> bigUnionWith (<span class="fu">.+.</span>)) sMult <span class="kw">where</span>
   sMult i s vec <span class="fu">|</span> isZero s  <span class="fu">=</span> emptyVec
@@ -178,20 +180,20 @@ nonZero <span class="fu">=</span> <span class="dt">Vec</span> <span class="fu">.
 <p>This function computes the successors of a set of vertices in a given graph, where the graph is represented by its adjacency matrix.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.-&gt;) ::</span> [<span class="dt">Vertex</span>] <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> [<span class="dt">Vertex</span>]
 v <span class="fu">.-&gt;</span> m <span class="fu">=</span> fromVec (toVec v <span class="fu">.*&gt;</span> m)</code></pre>
-<p>The actual multiplication is pseudo-Boolean: every performed multiplication is essentially a multiplication by <code>one</code>.</p>
+<p>The actual multiplication is pseudo-Boolean: every performed multiplication is essentially a multiplication by <code class="sourceCode haskell">one</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*&gt;) ::</span> <span class="dt">Vec</span> s <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> a
 (<span class="fu">.*&gt;</span>) <span class="fu">=</span> vecMatMult leftmostUnion (\ _ _ row <span class="ot">-&gt;</span> row)</code></pre>
-<p>This is an algebraic version of the successor multiplication. The underlying semiring needs to be idempotent, i.e. <code>x .+. x == x</code> for all <code>x :: s</code>.</p>
+<p>This is an algebraic version of the successor multiplication. The underlying semiring needs to be idempotent, i.e. <code class="sourceCode haskell">x <span class="fu">.+.</span> x <span class="fu">==</span> x</code> for all <code class="sourceCode haskell"><span class="ot">x ::</span> s</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.-&gt;*) ::</span> <span class="dt">Semiring</span> s <span class="ot">=&gt;</span> [<span class="dt">Vertex</span>] <span class="ot">-&gt;</span> <span class="dt">Mat</span> s <span class="ot">-&gt;</span> [<span class="dt">Vertex</span>]
 (<span class="fu">.-&gt;*</span>) v m <span class="fu">=</span> fromVec (toVec1 v <span class="fu">.*</span> m)</code></pre>
-<p>The above function <code>(.-&gt;*)</code> can be instantiated with a particular idempotent semiring, e.g. the Boolean semiring.</p>
+<p>The above function <code class="sourceCode haskell">(<span class="fu">.-&gt;*</span>)</code> can be instantiated with a particular idempotent semiring, e.g. the Boolean semiring.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.-&gt;&gt;) ::</span> [<span class="dt">Vertex</span>] <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> [<span class="dt">Vertex</span>]
 (<span class="fu">.-&gt;&gt;</span>) v m <span class="fu">=</span> v <span class="fu">.-&gt;*</span> fmap (const (<span class="ot">one ::</span> <span class="dt">Bool</span>)) m</code></pre>
 <h2 id="successors-that-know-the-number-of-their-predecessors">Successors that know the number of their predecessors</h2>
 <p>This function computes the successors of a vertex set and counts the number of times each successor is encountered as well.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.#) ::</span> [<span class="dt">Vertex</span>] <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">Number</span> <span class="dt">Int</span>)
 v <span class="fu">.#</span> m <span class="fu">=</span> toVecWith <span class="dv">0</span> v <span class="fu">.*#</span> m</code></pre>
-<p>The underlying multiplication of this function is the following one. It maps every value that is encountered in the adjacency list of a vertex to <code>1</code> and then uses numerical addition to add the resulting ones.</p>
+<p>The underlying multiplication of this function is the following one. It maps every value that is encountered in the adjacency list of a vertex to <code class="sourceCode haskell"><span class="dv">1</span></code> and then uses numerical addition to add the resulting ones.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*#) ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> <span class="dt">Vec</span> (<span class="dt">Number</span> a) <span class="ot">-&gt;</span> <span class="dt">Mat</span> b <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">Number</span> a)
 (<span class="fu">.*#</span>) <span class="fu">=</span> vecMatMult (bigUnionWith (<span class="fu">+</span>)) (sMultWith (\_ _ _ <span class="ot">-&gt;</span> <span class="dv">1</span>))</code></pre>
 <h2 id="existence-of-successors">Existence of successors</h2>
@@ -202,7 +204,7 @@ hasSuccsMul _ _  <span class="fu">=</span> not <span class="fu">.</span> isEmpty
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.?) ::</span> <span class="dt">Vec</span> a <span class="ot">-&gt;</span> <span class="dt">Mat</span> b <span class="ot">-&gt;</span> <span class="dt">Bool</span>
 (<span class="fu">.?</span>) <span class="fu">=</span> vecMatMult or hasSuccsMul</code></pre>
 <h2 id="prolonging-a-single-path">Prolonging a single path</h2>
-<p>Vertex paths are represented by a <code>Seq</code>.</p>
+<p>Vertex paths are represented by a <code class="sourceCode haskell"><span class="dt">Seq</span></code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Path</span> <span class="fu">=</span> <span class="dt">Seq</span> <span class="dt">Vertex</span></code></pre>
 <p>Given the adjacency matrix of a graph and a vector where each vertex is labelled with a single path that leads to this vertex this multiplication computes the successors of this vector and marks every successor with a single path that leads to it as well.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*~) ::</span> <span class="dt">Vec</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> <span class="dt">Path</span>
@@ -214,14 +216,14 @@ pathMul <span class="fu">=</span> sMultWith (\v path _ <span class="ot">-&gt;</s
 <p>This multiplication prolongs all paths that lead to a target vertex by exactly one step through the graph represented by the given matrix.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*~~) ::</span> <span class="dt">Vec</span> [<span class="dt">Path</span>] <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> [<span class="dt">Path</span>]
 (<span class="fu">.*~~</span>) <span class="fu">=</span> vecMatMult allUnion pathsMul</code></pre>
-<p>The <code>allUnion</code> function collects all results in their order of occurrence.</p>
+<p>The <code class="sourceCode haskell">allUnion</code> function collects all results in their order of occurrence.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">allUnion ::</span> [<span class="dt">Vec</span> [a]] <span class="ot">-&gt;</span> <span class="dt">Vec</span> [a]
 allUnion <span class="fu">=</span> bigUnionWith (<span class="fu">++</span>)</code></pre>
-<p>Similarly to the <code>pathMul</code> function, the following function prolongs all paths instead of just one.</p>
+<p>Similarly to the <code class="sourceCode haskell">pathMul</code> function, the following function prolongs all paths instead of just one.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">pathsMul ::</span> <span class="dt">Vertex</span> <span class="ot">-&gt;</span> [<span class="dt">Path</span>] <span class="ot">-&gt;</span> <span class="dt">Vec</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> [<span class="dt">Path</span>]
 pathsMul <span class="fu">=</span> sMultWith (\ v ps _ <span class="ot">-&gt;</span> map (<span class="fu">|&gt;</span> v) ps)</code></pre>
 <h2 id="outgoing-values">Outgoing values</h2>
-<p>The following multiplication computes the successors of a vertex and adds all predecessors and their corresponding values to the <code>Arc</code>-list at the respective index.</p>
+<p>The following multiplication computes the successors of a vertex and adds all predecessors and their corresponding values to the <code class="sourceCode haskell"><span class="dt">Arc</span></code>-list at the respective index.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*||) ::</span> <span class="dt">Vec</span> [<span class="dt">Arc</span> a] <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> [<span class="dt">Arc</span> a]
 (<span class="fu">.*||</span>) <span class="fu">=</span> vecMatMult allUnion outMult</code></pre>
 <p>The essence of the above multiplication is this scalar multiplication, which prepends the &quot;current&quot; vertex and the outgoing value to the given list of vertex-value pairs.</p>
@@ -231,7 +233,7 @@ outMult <span class="fu">=</span> sMultWith (\i ovs a <span class="ot">-&gt;</sp
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">transpose ::</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
 transpose mat <span class="fu">=</span> <span class="dt">Mat</span> (fmap <span class="dt">Vec</span> ((vertices <span class="fu">.*||</span> mat) \\<span class="fu">/</span> vertices)) <span class="kw">where</span>
     vertices <span class="fu">=</span> verticesWith [] mat</code></pre>
-<p>It is possible to define a very similar function that computes the transposition of a heterogeneous matrix by adding an additional <code>Int</code> argument that denotes the number of columns. This number can then be used in the &quot;correction&quot; step (application of <code>(\\/)</code>) to add the correct number of columns.</p>
+<p>It is possible to define a very similar function that computes the transposition of a heterogeneous matrix by adding an additional <code class="sourceCode haskell"><span class="dt">Int</span></code> argument that denotes the number of columns. This number can then be used in the &quot;correction&quot; step (application of <code class="sourceCode haskell">(\\<span class="fu">/</span>)</code>) to add the correct number of columns.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">transposeHeterogeneous ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
 transposeHeterogeneous cols mat <span class="fu">=</span> <span class="dt">Mat</span> (fmap <span class="dt">Vec</span> ((vertices <span class="fu">.*||</span> mat) \\<span class="fu">/</span> vertices&#39;)) <span class="kw">where</span>
     vertices  <span class="fu">=</span> verticesWith [] mat
@@ -240,7 +242,7 @@ transposeHeterogeneous cols mat <span class="fu">=</span> <span class="dt">Mat</
 <p>Assuming that a vector is labelled with a reachability forest (from another vector) at every index this multiplication computes the reachability forest that is obtained by walking a single step through the graph.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">(.*++) ::</span> <span class="dt">Vec</span> (<span class="dt">Forest</span> <span class="dt">Vertex</span>) <span class="ot">-&gt;</span> <span class="dt">Mat</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">Forest</span> <span class="dt">Vertex</span>)
 (<span class="fu">.*++</span>) <span class="fu">=</span> vecMatMult allUnion fMult</code></pre>
-<p>The scalar multiplication labels every successor of a given vertex with a forest starting in that vertex that leads to the successor. The concatenation of all these forests is then the result and is computed above by using <code>allUnion</code>.</p>
+<p>The scalar multiplication labels every successor of a given vertex with a forest starting in that vertex that leads to the successor. The concatenation of all these forests is then the result and is computed above by using <code class="sourceCode haskell">allUnion</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">fMult ::</span> <span class="dt">Vertex</span> <span class="ot">-&gt;</span> <span class="dt">Forest</span> <span class="dt">Vertex</span> <span class="ot">-&gt;</span> <span class="dt">Vec</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">Forest</span> <span class="dt">Vertex</span>)
 fMult <span class="fu">=</span> sMultWith (\v forest _ <span class="ot">-&gt;</span> [<span class="dt">Node</span> v forest])</code></pre>
 <p>An application of the above multiplication is the computation of the reachability forest along shortest paths between two vertex sets, which is provided by the following function.</p>
@@ -267,7 +269,7 @@ reachWith mul r gs <span class="fu">=</span> go r (verticesWith () (head gs)) <s
              <span class="ot">-&gt;</span> <span class="dt">Vec</span> a
 shortestWith mul a b gs <span class="fu">=</span> head (dropWhile isEmptyVec (map (<span class="fu">//</span>\ b) (reachWith mul a gs)) <span class="fu">++</span> [<span class="dt">Vec</span> []])</code></pre>
 <h1 id="maximal-set-of-pairwise-disjoint-shortest-paths">Maximal Set of Pairwise Disjoint Shortest Paths</h1>
-<p>The computation of a maximal set of pairwise disjoint shortest paths between two vertex sets is realised by computing the reachability forest with the <code>reachForest</code> function and then pruning it with the following strategy. If there is no tree left, there no path left in the forest. If on the other hand there is a leftmost tree, check whether its root node is visited. If it is, continue with the remainder of the forest. If it's not, then visit this vertex. Next compute a path candidate. In case the candidate is indeed a path, add the vertex to its end and obtain a path in the graph. Otherwise continue searching in the remaining forest. The candidate is the empty path in case the current subforest is empty, since this means that the bottom of the forest has been reached and the path found by the recursive call on the subforest otherwise.</p>
+<p>The computation of a maximal set of pairwise disjoint shortest paths between two vertex sets is realised by computing the reachability forest with the <code class="sourceCode haskell">reachForest</code> function and then pruning it with the following strategy. If there is no tree left, there no path left in the forest. If on the other hand there is a leftmost tree, check whether its root node is visited. If it is, continue with the remainder of the forest. If it's not, then visit this vertex. Next compute a path candidate. In case the candidate is indeed a path, add the vertex to its end and obtain a path in the graph. Otherwise continue searching in the remaining forest. The candidate is the empty path in case the current subforest is empty, since this means that the bottom of the forest has been reached and the path found by the recursive call on the subforest otherwise.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">chop ::</span> <span class="dt">Forest</span> <span class="dt">Vertex</span> <span class="ot">-&gt;</span> <span class="dt">MaybeT</span> <span class="dt">SetM</span> <span class="dt">Path</span>
 chop []               <span class="fu">=</span> mzero
 chop (<span class="dt">Node</span> v ts <span class="fu">:</span> fs) <span class="fu">=</span> <span class="kw">do</span> b <span class="ot">&lt;-</span> lift (contains v)
@@ -277,7 +279,7 @@ chop (<span class="dt">Node</span> v ts <span class="fu">:</span> fs) <span clas
 
                           <span class="kw">where</span> candidate <span class="fu">|</span> null ts   <span class="fu">=</span> return empty
                                           <span class="fu">|</span> otherwise <span class="fu">=</span> chop ts</code></pre>
-<p>The actual disjoint paths function computes the reachability forest and then prunes every single forest <code>[Node i f]</code> where <code>(i, f) :: Arc (Forest Vertex)</code> is a vertex-value pair that is contained in the result vector of <code>reachForest</code>. Finally, the monadic set that is used for the computation is &quot;left&quot; and the resulting list of <code>Maybe Path</code> values is transformed into a list of paths by <code>catMaybes</code>.</p>
+<p>The actual disjoint paths function computes the reachability forest and then prunes every single forest <code class="sourceCode haskell">[<span class="dt">Node</span> i f]</code> where <code class="sourceCode haskell">(i, f)<span class="ot"> ::</span> <span class="dt">Arc</span> (<span class="dt">Forest</span> <span class="dt">Vertex</span>)</code> is a vertex-value pair that is contained in the result vector of <code class="sourceCode haskell">reachForest</code>. Finally, the monadic set that is used for the computation is &quot;left&quot; and the resulting list of <code class="sourceCode haskell"><span class="dt">Maybe</span> <span class="dt">Path</span></code> values is transformed into a list of paths by <code class="sourceCode haskell">catMaybes</code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">disjointPaths ::</span> <span class="dt">Int</span>      <span class="co">-- number of vertices in the graph(s)</span>
               <span class="ot">-&gt;</span> <span class="dt">Vec</span> a    <span class="co">-- start vector</span>
               <span class="ot">-&gt;</span> <span class="dt">Vec</span> b    <span class="co">-- target vector</span>
@@ -287,7 +289,7 @@ disjointPaths n start end gs <span class="fu">=</span> catMaybes (process (reach
 
     process <span class="fu">=</span> runNew n <span class="fu">.</span> mapM (runMaybeT <span class="fu">.</span> chop <span class="fu">.</span> return <span class="fu">.</span> uncurry <span class="dt">Node</span>) <span class="fu">.</span> unVec</code></pre>
 <h2 id="monadic-set-interface">Monadic set interface</h2>
-<p>The following monadic set interface is very similar to the one in <a href="http://hackage.haskell.org/package/containers-0.5.4.0/docs/Data-Graph.html"><code>Data.Graph</code></a>. and can be replaced with a pure set representation by <code>Data.IntSet</code>. All of the definitions below are almost identical to the ones from <code>Data.Graph</code>.</p>
+<p>The following monadic set interface is very similar to the one in <a href="http://hackage.haskell.org/package/containers-0.5.4.0/docs/Data-Graph.html"><code>Data.Graph</code></a>. and can be replaced with a pure set representation by <code class="sourceCode haskell"><span class="dt">Data.IntSet</span></code>. All of the definitions below are almost identical to the ones from <code class="sourceCode haskell"><span class="dt">Data.Graph</span></code>.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">SetM</span> a <span class="fu">=</span> <span class="dt">Set</span> {<span class="ot"> runSet ::</span> forall s <span class="fu">.</span> <span class="dt">STArray</span> s <span class="dt">Int</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">ST</span> s a }
 
 <span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">SetM</span> <span class="kw">where</span>
@@ -310,7 +312,7 @@ contains x <span class="fu">=</span> <span class="dt">Set</span> (<span class="o
 <p>Inserts the given index in the set.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">include ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">SetM</span> ()
 include x <span class="fu">=</span> <span class="dt">Set</span> (\arr <span class="ot">-&gt;</span> writeArray arr x <span class="dt">True</span>)</code></pre>
-<p>Produces the value associated with the given set. The <code>Int</code> denotes the size of the set.</p>
+<p>Produces the value associated with the given set. The <code class="sourceCode haskell"><span class="dt">Int</span></code> denotes the size of the set.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">runNew ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">SetM</span> a <span class="ot">-&gt;</span> a
 runNew n set <span class="fu">=</span> runST (newArray (<span class="dv">0</span>, n <span class="fu">-</span> <span class="dv">1</span>) <span class="dt">False</span> <span class="fu">&gt;&gt;=</span> runSet set)</code></pre>
 <h1 id="example-matrices-and-vectors">Example Matrices and Vectors</h1>
@@ -346,7 +348,7 @@ mat2 <span class="fu">=</span> <span class="dt">Mat</span> <span class="fu">$</s
                   (<span class="dv">7</span>, <span class="dt">Vec</span> [(<span class="dv">3</span>,<span class="ch">&#39;v&#39;</span>),(<span class="dv">6</span>,<span class="ch">&#39;f&#39;</span>),(<span class="dv">9</span>,<span class="ch">&#39;v&#39;</span>)]),
                   (<span class="dv">8</span>, <span class="dt">Vec</span> [(<span class="dv">2</span>,<span class="ch">&#39;g&#39;</span>),(<span class="dv">4</span>,<span class="ch">&#39;m&#39;</span>),(<span class="dv">5</span>,<span class="ch">&#39;k&#39;</span>),(<span class="dv">7</span>,<span class="ch">&#39;w&#39;</span>),(<span class="dv">8</span>,<span class="ch">&#39;k&#39;</span>)]),
                   (<span class="dv">9</span>, <span class="dt">Vec</span> [(<span class="dv">0</span>,<span class="ch">&#39;c&#39;</span>),(<span class="dv">2</span>,<span class="ch">&#39;a&#39;</span>)])]</code></pre>
-<p>These two matrices are structurally identical, but the first one contains <code>Char</code> values, while the second one contains only ones of the type <code>Number Int</code>. These two correspond to the graphs <span class="math">\(G&#39;\)</span> and <span class="math">\(G\)</span> from Section 1.</p>
+<p>These two matrices are structurally identical, but the first one contains <code class="sourceCode haskell"><span class="dt">Char</span></code> values, while the second one contains only ones of the type <code class="sourceCode haskell"><span class="dt">Number</span> <span class="dt">Int</span></code>. These two correspond to the graphs <span class="math">\(G&#39;\)</span> and <span class="math">\(G\)</span> from Section 1.</p>
 <div class="figure">
 <img src="./graphLabelled.png" alt="Graph G&#39;" /><p class="caption">Graph <span class="math">\(G&#39;\)</span></p>
 </div>
@@ -366,7 +368,7 @@ graphChar <span class="fu">=</span> <span class="dt">Mat</span> <span class="fu"
 
 <span class="ot">graphNumber ::</span> <span class="dt">Mat</span> (<span class="dt">Number</span> <span class="dt">Int</span>)
 graphNumber <span class="fu">=</span> fmap (const <span class="dv">1</span>) graphChar</code></pre>
-<p>These two vectors are structurally identical, but the first one contains only <code>()</code> values and the second one contains only ones of the type <code>Number Int</code>. Both are variants of the vector <span class="math">\(v_X\)</span> from Section 1.</p>
+<p>These two vectors are structurally identical, but the first one contains only <code class="sourceCode haskell">()</code> values and the second one contains only ones of the type <code class="sourceCode haskell"><span class="dt">Number</span> <span class="dt">Int</span></code>. Both are variants of the vector <span class="math">\(v_X\)</span> from Section 1.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">vec ::</span> <span class="dt">Vec</span> ()
 vec <span class="fu">=</span> toVec [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">6</span>]
 
@@ -380,7 +382,7 @@ vecNumber <span class="fu">=</span> fmap (const <span class="dv">1</span>) vec</
                         <span class="ot">-&gt;</span> (a, a)  <span class="co">-- ^ lower and upper bounds for the random values</span>
                         <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
 randomGraph <span class="fu">=</span> matlikeToMat randomSquareMatLike</code></pre>
-<p>The following function takes a <code>MatLike a</code> value and transforms it into an actual matrix.</p>
+<p>The following function takes a <code class="sourceCode haskell"><span class="dt">MatLike</span> a</code> value and transforms it into an actual matrix.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">fromAssociationList ::</span> <span class="dt">MatLike</span> a <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
 fromAssociationList <span class="fu">=</span> <span class="dt">Mat</span> <span class="fu">.</span> <span class="dt">Vec</span> <span class="fu">.</span> map (second <span class="dt">Vec</span>)</code></pre>
 <p>For instance</p>

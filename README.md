@@ -35,11 +35,12 @@ Documentation
 
 You can browse the documentation online:
 
-* [VMM](./src/VMM.html)
+* [VMM](./src/VMM.lhs)
   is the main file. It contains the algorithms and examples.
-* [RandomMatrix](./src/RandomMatrix.html)
+* [RandomMatrix](./src/RandomMatrix.lhs)
   is an auxiliary file that takes care of the creation of random matrices.
-* [Semiring](./src/Semiring.html)
+* [Semiring](./src/Semiring.lhs)
   is another auxiliary file that contains the semiring type class and some common instances.
 
-Alternatively, these files are all located in `src/` and can be viewed locally.
+Alternatively, you can view these files locally as `.lhs` files directly or as precompiled
+`.html` files. All files are located in the `/src` folder.

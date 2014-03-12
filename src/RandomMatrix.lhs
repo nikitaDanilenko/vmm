@@ -35,7 +35,7 @@ For simplicity only the "pure association lists" of matrices are generated, whic
 by the stacked association lists. Values of the type `MatLike a` are required to satisfy
 the following two conditions:
 
-* Its indices are exactly $0$ to $n - 1$ for some $n \in \mathbb N$ in precisely this order.
+* Its indices are exactly *0* to *n - 1* for some natural number *n* in precisely this order.
 * The value at every index is an association list that is sorted with respect to its indices.
 
 > type MatLike a = [(Int, [(Int, a)])]
@@ -90,7 +90,7 @@ A random graph is a random matrix with the same number of rows and columns.
 > randomSquareMatLike gen size = randomMatLike gen size size
 
 A random relation is a special case of a matrix where entries are either existent or not.
-Existent entries are denoted by the value (), non-existent entries are simply not contained
+Existent entries are denoted by the value `()`, non-existent entries are simply not contained
 in the corresponding list.
 
 > randomRelationLike ::
@@ -103,7 +103,7 @@ in the corresponding list.
 
 Creates a random diagonal square matrix. Please note that the density is
 computed w.r.t. the diagonal and /not/ the number of entries altogether. That
-is: `randomDiagonal (mkStdGen 1234) 10 0.3 (0, 1)` will create a square matrix
+is: `randomDiagonalLike (mkStdGen 1234) 10 0.3 (0, 1)` will create a square matrix
 with exactly three (not thirty) entries.
 
 > randomDiagonalLike ::
@@ -116,7 +116,7 @@ with exactly three (not thirty) entries.
 > 
 >     resize = zipWith (\i mv -> (i, maybe [] (\v -> [(i, v)]) mv)) [0..]
 
-Creates a random triangle square matrix. As with `randomDiagonal` the density
+Creates a random triangle square matrix. As with `randomDiagonalLike` the density
 refers to the density of the triangle. That is the number of entries in the matrix will
 be `floor (density * size * (size + 1) / 2)`.
 
@@ -132,7 +132,7 @@ be `floor (density * size * (size + 1) / 2)`.
 
 Creates a random strict triangle matrix (no entries at the diagonal). The density refers to the
 density of the strict triangle, that is the number of entries is
-'floor (density * size * (size - 1) / 2)`.
+`floor (density * size * (size - 1) / 2)`.
 
 > randomStrictTriangleLike ::
 >     (RandomGen g, Random a) => g            -- ^ random generator
@@ -194,15 +194,15 @@ function is used to determine the length of the next chunk. For instance:
 >     go _ [] = []
 >     go n xs = take n xs : go (f n) (drop n xs)
 
-Given an integer $n$ and a list this function breaks the list into chunks of length $n$. The
-last chunk is shorter, iff the length of the given list is not a multiple of $n$.
+Given an integer *n* and a list this function breaks the list into chunks of length *n*. The
+last chunk is shorter, iff the length of the given list is not a multiple of *n*.
 
 > chopUniform :: Int -> [a] -> [[a]]
 > chopUniform = breakWith id
 
 This function chops a given list into sublists of increasing length beginning with 1. The last
-element is shorter than the second to last, if the length of the list is not $n\cdot(n+1)/2$ for
-some $n \in \mathbb N$.
+element is shorter than the second to last, if the length of the list is not _n*(n+1)/2_ for
+some natural number *n*
 
 The name of the function hints at its use, since one can use the resulting chunks to fill a
 lower triangle matrix.
@@ -212,7 +212,7 @@ lower triangle matrix.
 
 This function behaves very similarly to `chopTriangle`, but its first list is empty.
 The last element of this list is shorter than the second to last iff the list length is not
-$n\cdot(n+1)/2$ for some integer $n \in \mathbb N$.
+_n * (n+1)/2_ for some integer *n*
 
 Again, the name hints at the function's application, namely the construction of a strict lower
 triangle matrix.

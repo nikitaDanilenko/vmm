@@ -15,19 +15,19 @@ The semiring typeclass. The same definition is used
 >   zero, one  :: s
 
 We require that the following laws are
-satisfied for all `a, b, c` `:: s`{.haskell}:
+satisfied for all `a, b, c` `:: s`:
 
-* `(.+.)`{.haskell} is associative, commutative and has `zero`{.haskell} as the neutral element.
-* `(.*.)`{.haskell} is associative and has `one` as the neutral element.
-* `(.*.)`{.haskell} distributes over `(.+.)`{.haskell} from both sides, i.e.
+* `(.+.)` is associative, commutative and has `zero` as the neutral element.
+* `(.*.)` is associative and has `one` as the neutral element.
+* `(.*.)` distributes over `(.+.)` from both sides, i.e.
 
-    `a .*. (b .+. c) == (a .*. b) .+. (a .*. c)`{.haskell}
+    `a .*. (b .+. c) == (a .*. b) .+. (a .*. c)`
 
 
-    `(b .+. c) .*. a == (b .*. a) .+. (c .*. a)`{.haskell}
-* `zero`{.haskell} is annihilating, i.e.
+    `(b .+. c) .*. a == (b .*. a) .+. (c .*. a)`
+* `zero` is annihilating, i.e.
 
-    `a .*. zero == zero == zero .*. a`{.haskell}
+    `a .*. zero == zero == zero .*. a`
 
 Boolean values form a semiring.
 
@@ -62,7 +62,7 @@ easily generalised.
 >     compare _          MaxWeight   = LT
 >     compare w          w'          = comparing weight w w'
 
-`Tropical w`{.haskell} forms a semiring if `w` has an `Ord`{.haskell} and a `Monoid`{.haskell}
+`Tropical w` forms a semiring if `w` has an `Ord` and a `Monoid`
 instance that satisfy ``forall x, y :: w . x <= x `mappend` y``
 
 This condition is _not_ satisfied in case of the additive monoid of most numerical values, because
