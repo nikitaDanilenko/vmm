@@ -28,7 +28,7 @@ ghci> :m VMM
 VMM>
 ~~~
 
-or imported into an own Haskell module via `import VMM`{.haskell}.
+or imported into an own Haskell module via `import VMM`.
 
 Documentation
 -------------
