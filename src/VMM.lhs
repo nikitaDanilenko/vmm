@@ -577,14 +577,14 @@ of the vector *v_X* from Section 1.
 Random examples
 ---------------
 
-Random graphs can be generated with the following function.
+Random matrices can be generated with the following function.
 
-> randomGraph :: Random a => Int     -- ^ random generator number
+> randomMatrix :: Random a => Int     -- ^ random generator number
 >                         -> Int     -- ^ number of vertices
 >                         -> Double  -- ^ density between 0 and 1
 >                         -> (a, a)  -- ^ lower and upper bounds for the random values
 >                         -> Mat a
-> randomGraph = matlikeToMat randomSquareMatLike
+> randomMatrix = matlikeToMat randomSquareMatLike
 
 The following function takes a `MatLike a` value and transforms it into
 an actual matrix.
@@ -595,10 +595,10 @@ an actual matrix.
 For instance
 
 > graphRandom1 :: Mat Char
-> graphRandom1 = randomGraph 23571113 10 0.25 ('a', 'e')
+> graphRandom1 = randomMatrix 23571113 10 0.25 ('a', 'e')
 >
 > graphRandom2 :: Mat (Number Int)
-> graphRandom2 = randomGraph 12345 5 0.1 (0, 20)
+> graphRandom2 = randomMatrix 12345 5 0.1 (0, 20)
 
 The following function takes a random construction and produces a matrix. It is used to "redefine"
 all generators to yield actual matrices.

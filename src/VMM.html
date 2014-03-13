@@ -375,22 +375,22 @@ vec <span class="fu">=</span> toVec [<span class="dv">1</span>,<span class="dv">
 <span class="ot">vecNumber ::</span> <span class="dt">Vec</span> (<span class="dt">Number</span> <span class="dt">Int</span>)
 vecNumber <span class="fu">=</span> fmap (const <span class="dv">1</span>) vec</code></pre>
 <h2 id="random-examples">Random examples</h2>
-<p>Random graphs can be generated with the following function.</p>
-<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">randomGraph ::</span> <span class="dt">Random</span> a <span class="ot">=&gt;</span> <span class="dt">Int</span>     <span class="co">-- ^ random generator number</span>
+<p>Random matrices can be generated with the following function.</p>
+<pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">randomMatrix ::</span> <span class="dt">Random</span> a <span class="ot">=&gt;</span> <span class="dt">Int</span>     <span class="co">-- ^ random generator number</span>
                         <span class="ot">-&gt;</span> <span class="dt">Int</span>     <span class="co">-- ^ number of vertices</span>
                         <span class="ot">-&gt;</span> <span class="dt">Double</span>  <span class="co">-- ^ density between 0 and 1</span>
                         <span class="ot">-&gt;</span> (a, a)  <span class="co">-- ^ lower and upper bounds for the random values</span>
                         <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
-randomGraph <span class="fu">=</span> matlikeToMat randomSquareMatLike</code></pre>
+randomMatrix <span class="fu">=</span> matlikeToMat randomSquareMatLike</code></pre>
 <p>The following function takes a <code class="sourceCode haskell"><span class="dt">MatLike</span> a</code> value and transforms it into an actual matrix.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">fromAssociationList ::</span> <span class="dt">MatLike</span> a <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
 fromAssociationList <span class="fu">=</span> <span class="dt">Mat</span> <span class="fu">.</span> <span class="dt">Vec</span> <span class="fu">.</span> map (second <span class="dt">Vec</span>)</code></pre>
 <p>For instance</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">graphRandom1 ::</span> <span class="dt">Mat</span> <span class="dt">Char</span>
-graphRandom1 <span class="fu">=</span> randomGraph <span class="dv">23571113</span> <span class="dv">10</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">25</span> (<span class="ch">&#39;a&#39;</span>, <span class="ch">&#39;e&#39;</span>)
+graphRandom1 <span class="fu">=</span> randomMatrix <span class="dv">23571113</span> <span class="dv">10</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">25</span> (<span class="ch">&#39;a&#39;</span>, <span class="ch">&#39;e&#39;</span>)
 
 <span class="ot">graphRandom2 ::</span> <span class="dt">Mat</span> (<span class="dt">Number</span> <span class="dt">Int</span>)
-graphRandom2 <span class="fu">=</span> randomGraph <span class="dv">12345</span> <span class="dv">5</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">1</span> (<span class="dv">0</span>, <span class="dv">20</span>)</code></pre>
+graphRandom2 <span class="fu">=</span> randomMatrix <span class="dv">12345</span> <span class="dv">5</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">1</span> (<span class="dv">0</span>, <span class="dv">20</span>)</code></pre>
 <p>The following function takes a random construction and produces a matrix. It is used to &quot;redefine&quot; all generators to yield actual matrices.</p>
 <pre class="sourceCode literate haskell"><code class="sourceCode haskell"><span class="ot">matlikeToMat ::</span> (<span class="dt">StdGen</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> (a, a) <span class="ot">-&gt;</span> <span class="dt">MatLike</span> a)
              <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> (a, a) <span class="ot">-&gt;</span> <span class="dt">Mat</span> a
