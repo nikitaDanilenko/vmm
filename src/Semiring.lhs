@@ -16,7 +16,7 @@ The semiring typeclass. The same definition is used
 >   zero, one  :: s
 
 We require that the following laws are
-satisfied for all `a, b, c` `:: s`:
+satisfied for all `a, b, c :: s`:
 
 * `(.+.)` is associative, commutative and has `zero` as the neutral element.
 * `(.*.)` is associative and has `one` as the neutral element.

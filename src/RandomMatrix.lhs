@@ -102,7 +102,7 @@ in the corresponding list.
 > randomRelationLike gen rows cols dens = randomMatLike gen rows cols dens ((), ())
 
 Creates a random diagonal square matrix. Please note that the density is
-computed w.r.t. the diagonal and /not/ the number of entries altogether. That
+computed w.r.t. the diagonal and *not* the number of entries altogether. That
 is: `randomDiagonalLike (mkStdGen 1234) 10 0.3 (0, 1)` will create a square matrix
 with exactly three (not thirty) entries.
 

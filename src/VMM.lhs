@@ -596,7 +596,7 @@ For instance
 
 > graphRandom1 :: Mat Char
 > graphRandom1 = randomMatrix 23571113 10 0.25 ('a', 'e')
->
+> 
 > graphRandom2 :: Mat (Number Int)
 > graphRandom2 = randomMatrix 12345 5 0.1 (0, 20)
 
