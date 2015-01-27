@@ -1,7 +1,7 @@
 Semiring typeclass and instances
 ================================
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 {-# Language GeneralizedNewtypeDeriving #-}
 
 module Semiring where
@@ -13,7 +13,7 @@ import Data.Ord    ( comparing )
 The semiring typeclass. The same definition is used
 [here](http://hackage.haskell.org/package/weighted-regexp).
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 class Semiring s where
   (.+.), (.*.) :: s -> s -> s
   zero, one  :: s
@@ -35,7 +35,7 @@ We require that the following laws are satisfied for all `a, b, c :: s`:
 
 Boolean values form a semiring.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 instance Semiring Bool where
   (.+.) = (||)
   (.*.) = (&&)
@@ -61,12 +61,12 @@ compute lightest paths. This semiring is usually defined on the
 non-negative real numbers with infinity, but it can be easily
 generalised.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 data Tropical w = MinWeight | MaxWeight | Weight { weight :: w }
     deriving Eq
 ```
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 instance Ord w => Ord (Tropical w) where
     compare MinWeight  _           = LT
     compare _          MinWeight   = GT
@@ -81,7 +81,7 @@ instance that satisfy `` forall x, y :: w . x <= x `mappend` y ``
 This condition is *not* satisfied in case of the additive monoid of most
 numerical values, because adding negative numbers makes values smaller.
 
-``` {.sourceCode .literate .haskell}
+``` { .literate .haskell}
 -- assuming the expansion property
 instance (Ord w, Monoid w) => Semiring (Tropical w) where
     (.+.) = min
