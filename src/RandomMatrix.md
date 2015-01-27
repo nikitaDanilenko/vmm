@@ -36,7 +36,7 @@ Generation of random matrices
 
 For simplicity only the "pure association lists" of matrices are
 generated, which are represented by the stacked association lists.
-Values of the type `MatLike a`{.haskell} are required to satisfy the following
+Values of the type `MatLike a` are required to satisfy the following
 two conditions:
 
 -   Its indices are exactly *0* to *n - 1* for some natural number *n*
@@ -107,7 +107,7 @@ randomSquareMatLike gen size = randomMatLike gen size size
 ```
 
 A random relation is a special case of a matrix where entries are either
-existent or not. Existent entries are denoted by the value `()`{ .haskell},
+existent or not. Existent entries are denoted by the value `()`,
 non-existent entries are simply not contained in the corresponding list.
 
 ``` { .haskell}
@@ -122,7 +122,7 @@ randomRelationLike gen rows cols dens = randomMatLike gen rows cols dens ((), ()
 
 Creates a random diagonal square matrix. Please note that the density is
 computed w.r.t. the diagonal and *not* the number of entries altogether.
-That is: `randomDiagonalLike (mkStdGen 1234) 10 0.3 (0, 1)`{ .haskell} will
+That is: `randomDiagonalLike (mkStdGen 1234) 10 0.3 (0, 1)` will
 create a square matrix with exactly three (not thirty) entries.
 
 ``` { .haskell}
@@ -137,9 +137,9 @@ randomDiagonalLike gen size = randomMatLikeWith gen size size const resize where
     resize = zipWith (\i mv -> (i, maybe [] (\v -> [(i, v)]) mv)) [0..]
 ```
 
-Creates a random triangle square matrix. As with `randomDiagonalLike`{.haskell}
+Creates a random triangle square matrix. As with `randomDiagonalLike`
 the density refers to the density of the triangle. That is the number of
-entries in the matrix will be `floor (density * size * (size + 1) / 2)`{.haskell}.
+entries in the matrix will be `floor (density * size * (size + 1) / 2)`.
 
 ``` { .haskell}
 randomTriangleLike ::
@@ -171,7 +171,7 @@ randomStrictTriangleLike gen size = randomMatLikeWith gen size size f (resizeWit
 Random instances
 ----------------
 
-`Random`{ .haskell} instance for pairs of Random instances that simply generates
+`Random` instance for pairs of Random instances that simply generates
 two values in sequence.
 
 ``` { .haskell}
@@ -186,8 +186,8 @@ instance (Random a, Random b) => Random (a, b) where
         (y, g'') = random g'
 ```
 
-Random instance for the semiring of `Number`{ .haskell}s, which simply wraps the
-creation of a value into a `Number`{ .haskell} constructor.
+Random instance for the semiring of `Number`s, which simply wraps the
+creation of a value into a `Number` constructor.
 
 ``` { .haskell}
 instance Random a => Random (Number a) where
@@ -217,8 +217,8 @@ Given a function, an integer and a list, this function breaks the list
 in sublists. The given function is used to determine the length of the
 next chunk. For instance:
 
--   `breakWith id    3 "Explanation" == ["Exp","lan","ati","on"]`{ .haskell}
--   `breakWith (+ 1) 1 "Explanation" == ["E","xp","lan","atio","n"]`{ .haskell}
+-   `breakWith id    3 "Explanation" == ["Exp","lan","ati","on"]`
+-   `breakWith (+ 1) 1 "Explanation" == ["E","xp","lan","atio","n"]`
 
 ``` { .haskell}
 breakWith :: (Int -> Int) -> Int -> [a] -> [[a]]
@@ -239,8 +239,8 @@ chopUniform = breakWith id
 
 This function chops a given list into sublists of increasing length
 beginning with 1. The last element is shorter than the second to last,
-if the length of the list is not \n*(n+1)/2\ for some natural number
-n\*
+if the length of the list is not *n(n+1)/2* for some natural number
+*n*.
 
 The name of the function hints at its use, since one can use the
 resulting chunks to fill a lower triangle matrix.
@@ -250,7 +250,7 @@ chopTriangle :: [a] -> [[a]]
 chopTriangle = breakWith (+ 1) 1
 ```
 
-This function behaves very similarly to `chopTriangle`{ .haskell}, but its first
+This function behaves very similarly to `chopTriangle`, but its first
 list is empty. The last element of this list is shorter than the second
 to last iff the list length is not *n * (n+1)/2* for some integer *n*
 
@@ -262,7 +262,7 @@ chopStrictTriangle :: [a] -> [[a]]
 chopStrictTriangle = breakWith (+1) 0
 ```
 
-One particular recurring scheme is to split a list of `Maybe a`{ .haskell}
+One particular recurring scheme is to split a list of `Maybe a`
 values into lists of such values and then transform these lists into rows.
 This scheme is captured by the following function.
 
@@ -272,11 +272,11 @@ resizeWith f = zip [0 .. ] . map toRow . f
 ```
 
 This function transforms a list of `Maybe` values into an association
-list by first indexing the list and then removing the `Nothing`{ .haskell} 
+list by first indexing the list and then removing the `Nothing`
 values.
 For example,
 
--   `toRow [Just 'h', Nothing, Just 'i'] == [(0, 'h'), (2, 'i')]`{ .haskell}
+-   `toRow [Just 'h', Nothing, Just 'i'] == [(0, 'h'), (2, 'i')]`
 
 ``` { .haskell}
 toRow :: [Maybe a] -> [(Int, a)]
