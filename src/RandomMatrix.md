@@ -62,7 +62,7 @@ randomMatLikeWith :: (RandomGen g, Random a) =>
  -> Int                      -- ^ number of rows
  -> Int                      -- ^ number of columns
  -> (Int -> Int -> Int)      -- ^ function that computes the number of entries
-                             --   in the matrix, i.e. `(*)`{.haskell}
+                             --   in the matrix, e.g. (*)
  -> ([Maybe a] -> MatLike a) -- ^ function that splits the overall list into
                              --   sublists which then become rows
  -> Double                   -- ^ density, i.e. percentage of edges, which is
@@ -199,7 +199,7 @@ instance Random a => Random (Number a) where
         where (x, g') = random g
 ```
 
-Random instance for `()`{ .haskell}, which is trivial and deterministic.
+Random instance for `()`, which is trivial and deterministic.
 
 ``` { .haskell}
 instance Random () where
