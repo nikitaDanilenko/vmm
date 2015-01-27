@@ -45,7 +45,7 @@ instance Semiring Bool where
 
 "Numbers" form semirings as well.
 
-``` {.sourceCode .haskell}
+``` {.haskell}
 newtype Number n = Number { number :: n }
   deriving ( Num, Show, Eq )
 
