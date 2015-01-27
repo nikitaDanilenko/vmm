@@ -35,11 +35,11 @@ Documentation
 
 You can browse the documentation online:
 
-* [VMM](./src/VMM.lhs)
+* [VMM (*.lhs version)](./src/VMM.lhs) [VMM (*.md version)](./src/VMM.md)
   is the main file. It contains the algorithms and examples.
-* [RandomMatrix](./src/RandomMatrix.lhs)
+* [RandomMatrix (*.lhs)](./src/RandomMatrix.lhs) [RandomMatrix (*.md)](./src/RandomMatrix.md)
   is an auxiliary file that takes care of the creation of random matrices.
-* [Semiring](./src/Semiring.lhs)
+* [Semiring (*.lhs)](./src/Semiring.lhs) [Semiring (*.md)](./src/Semiring.md)
   is another auxiliary file that contains the semiring type class and some common instances.
 
 Alternatively, you can view these files locally as `.lhs` files directly or as precompiled
