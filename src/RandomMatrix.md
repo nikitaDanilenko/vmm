@@ -6,7 +6,7 @@ matrices (e.g. triangle or diagonal matrices). The randomness is
 provided by the `System.Random` implementation and is thus repeatable,
 which makes it very useful for testing.
 
-``` { .literate .haskell}
+``` { .haskell}
 module RandomMatrix (
     randomMatLike,
     randomSquareMatLike,
@@ -44,7 +44,7 @@ conditions:
 -   The value at every index is an association list that is sorted with
     respect to its indices.
 
-``` { .literate .haskell}
+``` { .haskell}
 type MatLike a = [(Int, [(Int, a)])]
 ```
 
@@ -56,7 +56,7 @@ table. Finally, the table is reduced to an association list. Any density
 larger than 1 behaves as 1 and every density smaller than 0 behaves as
 0.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomMatLikeWith :: (RandomGen g, Random a) =>
     g                        -- ^ random generator
  -> Int                      -- ^ number of rows
@@ -82,7 +82,7 @@ This function creates a random matrix by computing the necessary number
 of entries, then shuffling them and finally splitting them into uniform
 chunks which are then used as rows.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomMatLike ::
     (RandomGen g, Random a) => g            -- ^ random generator
                             -> Int          -- ^ number of rows
@@ -96,7 +96,7 @@ randomMatLike gen rows cols = randomMatLikeWith gen rows cols (*) (resizeWith (c
 A random graph is a random matrix with the same number of rows and
 columns.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomSquareMatLike ::
     (RandomGen g, Random a) => g            -- ^ random generator
                             -> Int          -- ^ number of rows and columns
@@ -110,7 +110,7 @@ A random relation is a special case of a matrix where entries are either
 existent or not. Existent entries are denoted by the value `()`,
 non-existent entries are simply not contained in the corresponding list.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomRelationLike ::
     RandomGen g => g              -- ^ random generator
                 -> Int            -- ^ number of rows
@@ -125,7 +125,7 @@ computed w.r.t. the diagonal and *not* the number of entries altogether.
 That is: `randomDiagonalLike (mkStdGen 1234) 10 0.3 (0, 1)` will create
 a square matrix with exactly three (not thirty) entries.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomDiagonalLike ::
     (RandomGen g, Random a) => g            -- ^ random generator
                             -> Int          -- ^ number of rows and columns
@@ -141,7 +141,7 @@ Creates a random triangle square matrix. As with `randomDiagonalLike`
 the density refers to the density of the triangle. That is the number of
 entries in the matrix will be `floor (density * size * (size + 1) / 2)`.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomTriangleLike ::
     (RandomGen g, Random a) => g            -- ^ random generator
                             -> Int          -- ^ number of rows and columns
@@ -157,7 +157,7 @@ Creates a random strict triangle matrix (no entries at the diagonal).
 The density refers to the density of the strict triangle, that is the
 number of entries is `floor (density * size * (size - 1) / 2)`.
 
-``` { .literate .haskell}
+``` { .haskell}
 randomStrictTriangleLike ::
     (RandomGen g, Random a) => g            -- ^ random generator
                             -> Int          -- ^ number of rows and columns
@@ -174,7 +174,7 @@ Random instances
 `Random` instance for pairs of Random instances that simply generates
 two values in sequence.
 
-``` { .literate .haskell}
+``` { .haskell}
 instance (Random a, Random b) => Random (a, b) where
 
     randomR ((la, lb), (ua, ub)) g = ((x, y), g'')
@@ -189,7 +189,7 @@ instance (Random a, Random b) => Random (a, b) where
 Random instance for the semiring of `Number`s, which simply wraps the
 creation of a value into a `Number` constructor.
 
-``` { .literate .haskell}
+``` { .haskell}
 instance Random a => Random (Number a) where
 
     randomR (l, u) g = (Number x, g')
@@ -201,7 +201,7 @@ instance Random a => Random (Number a) where
 
 Random instance for `()`, which is trivial and deterministic.
 
-``` { .literate .haskell}
+``` { .haskell}
 instance Random () where
 
     random g   = ((), fst (split g))
@@ -220,7 +220,7 @@ next chunk. For instance:
 -   `breakWith id    3 "Explanation" == ["Exp","lan","ati","on"]`
 -   `breakWith (+ 1) 1 "Explanation" == ["E","xp","lan","atio","n"]`
 
-``` { .literate .haskell}
+``` { .haskell}
 breakWith :: (Int -> Int) -> Int -> [a] -> [[a]]
 breakWith f = go where
 
@@ -232,7 +232,7 @@ Given an integer *n* and a list this function breaks the list into
 chunks of length *n*. The last chunk is shorter, iff the length of the
 given list is not a multiple of *n*.
 
-``` { .literate .haskell}
+``` { .haskell}
 chopUniform :: Int -> [a] -> [[a]]
 chopUniform = breakWith id
 ```
@@ -245,7 +245,7 @@ if the length of the list is not \_n*(n+1)/2\_ for some natural number
 The name of the function hints at its use, since one can use the
 resulting chunks to fill a lower triangle matrix.
 
-``` { .literate .haskell}
+``` { .haskell}
 chopTriangle :: [a] -> [[a]]
 chopTriangle = breakWith (+ 1) 1
 ```
@@ -257,7 +257,7 @@ to last iff the list length is not *n \* (n+1)/2* for some integer *n*
 Again, the name hints at the function's application, namely the
 construction of a strict lower triangle matrix.
 
-``` { .literate .haskell}
+``` { .haskell}
 chopStrictTriangle :: [a] -> [[a]]
 chopStrictTriangle = breakWith (+1) 0
 ```
@@ -266,7 +266,7 @@ One particular recurring scheme is to split a list of `Maybe a` values
 into lists of such values and then transform these lists into rows. This
 scheme is captured by the following function.
 
-``` { .literate .haskell}
+``` { .haskell}
 resizeWith :: ([Maybe a] -> [[Maybe a]]) -> [Maybe a] -> MatLike a
 resizeWith f = zip [0 .. ] . map toRow . f
 ```
@@ -277,7 +277,7 @@ For example,
 
 -   `toRow [Just 'h', Nothing, Just 'i'] == [(0, 'h'), (2, 'i')]`
 
-``` { .literate .haskell}
+``` { .haskell}
 toRow :: [Maybe a] -> [(Int, a)]
 toRow = mapMaybe (uncurry (fmap . (,))) . zip [0 .. ]
 ```
