@@ -53,5 +53,5 @@ You can browse the documentation online:
 * [Semiring](./src/Semiring.lhs)
   is another auxiliary file that contains the semiring type class and some common instances.
 
-Alternatively, you can view these files locally as `.lhs` files directly or as precompiled
-`.html` files. All files are located in the `/src` folder.
+Alternatively, you can view these files locally as `.lhs` files directly.
+All files are located in the `/src` folder.
