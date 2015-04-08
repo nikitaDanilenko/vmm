@@ -24,8 +24,10 @@ This module uses the separated modules
 > import Control.Monad.Trans.Maybe        ( MaybeT ( .. ) )
 > import Data.Array.ST                    ( STArray, writeArray, readArray, newArray )
 > import Data.Char                        ( chr )
-> import Data.List                        ( group, sort, intercalate )
+> import Data.Function                    ( on )
+> import Data.List                        ( groupBy, sortBy, intercalate )
 > import Data.Maybe                       ( catMaybes )
+> import Data.Ord                         ( comparing )
 > import Data.Sequence                    ( Seq, (|>), empty )
 > import Data.Tree                        ( Tree ( Node ), Forest )
 
@@ -70,12 +72,16 @@ This function checks whether the wrapped association list of a vector is empty.
 > isEmptyVec = null . unVec
 
 For simplicity of implementation and testing we define conversion functions between sets of vertices
-and vectors. To obtain a vector from a vertex set we need to sort the set and remove all duplicates.
-Then every vertex needs to be given a value, which is simple to implement with an additional
-function.
+and vectors. To obtain a vector from a list of arcs, we need to sort the arcs with respect to their
+first components and remove all duplicates. We keep only the first occurrence of any value.
+
+> mkVec :: [Arc a] -> Vec a
+> mkVec = Vec . map head . groupBy ((==) `on` fst) . sortBy (comparing fst)
+
+To get a vector from a list of vertices, we need a function that creates a value for each vertex.
 
 > toVecFrom :: (Vertex -> a) -> [Vertex] -> Vec a
-> toVecFrom f = Vec . map ((id &&& f) . head) . group . sort
+> toVecFrom f = mkVec . map (id &&& f)
 
 Using the same value for every vertex is the simplest case.
 
@@ -551,15 +557,15 @@ to the graphs *G'* and *G* from Section 1.
 ![Graph *G*](./graph.png)
 
 > graphChar :: Mat Char
-> graphChar = Mat $ Vec [(0, Vec []),
->                        (1, Vec [(2,'a'),(3,'s'),(6,'i')]),
->                        (2, Vec [(0,'m')]),
->                        (3, Vec [(2,'p'),(4,'l'),(7,'e')]),
->                        (4, Vec []),
->                        (5, Vec [(3,'g')]),
->                        (6, Vec [(0,'r'),(6,'a')]),
->                        (7, Vec [(3,'p'),(8, 'h')]),
->                        (8, Vec [])]
+> graphChar = Mat $ mkVec [(0, mkVec []),
+>                          (1, mkVec [(2,'a'),(3,'s'),(6,'i')]),
+>                          (2, mkVec [(0,'m')]),
+>                          (3, mkVec [(2,'p'),(4,'l'),(7,'e')]),
+>                          (4, mkVec []),
+>                          (5, mkVec [(3,'g')]),
+>                          (6, mkVec [(0,'r'),(6,'a')]),
+>                          (7, mkVec [(3,'p'),(8, 'h')]),
+>                          (8, mkVec [])]
 > 
 > graphNumber :: Mat (Number Int)
 > graphNumber = fmap (const 1) graphChar
@@ -573,6 +579,28 @@ of the vector *v_X* from Section 1.
 > 
 > vecNumber :: Vec (Number Int)
 > vecNumber = fmap (const 1) vec
+
+The following graphs are taken from the talk given at the TFP conference.
+
+> graphWithLabels :: Mat Char
+> graphWithLabels = Mat $ mkVec [(0, mkVec [(0, 'a'), (2, 'p'), (3, 'l')]),
+>                                (1, mkVec [(0, 'd'), (2, 'r')]),
+>                                (2, mkVec [(4, 'l')]),
+>                                (3, mkVec [(2, 'f'), (4, 'n'), (5, 'e')]),
+>                                (4, mkVec [(5, 'h')]),
+>                                (5, mkVec [(0, 'w'), (4, 'o')])]
+>
+> graphWithoutLabels :: Mat (Number Int)
+> graphWithoutLabels = fmap (const 1) graphWithLabels
+>
+> xVector :: Vec ()
+> xVector = toVec [2,3,0]
+>
+> xVectorNumber :: Vec (Number Int)
+> xVectorNumber = fmap (const 1) xVector
+>
+> yVector :: Vec (Number Int)
+> yVector = mkVec [(5,1), (2, -1)]
 
 Random examples
 ---------------
