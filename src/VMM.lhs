@@ -362,9 +362,13 @@ vertex and the outgoing value to the given list of vertex-value pairs.
 > outMult = sMultWith (\i ovs a -> (i, a) : ovs)
 
 An unusual application of the above multiplication is the transposition of a homogeneous matrix.
+We factor out the actual strategy in the function `preTranspose`.
+
+> preTranspose :: Vec [Arc a] -> Vec [Arc a] -> Mat a -> Mat a
+> preTranspose vs cols mat = Mat (fmap Vec ((vs .*|| mat) \\/ cols))
 
 > transpose :: Mat a -> Mat a
-> transpose mat = Mat (fmap Vec ((vertices .*|| mat) \\/ vertices)) where
+> transpose mat = preTranspose vertices vertices mat where
 >     vertices = verticesWith [] mat
 
 It is possible to define a very similar function that computes the transposition of a heterogeneous
@@ -373,7 +377,7 @@ number can then be used in the "correction" step (application of `(\\/)`) to add
 correct number of columns.
 
 > transposeHeterogeneous :: Int -> Mat a -> Mat a
-> transposeHeterogeneous cols mat = Mat (fmap Vec ((vertices .*|| mat) \\/ vertices')) where
+> transposeHeterogeneous cols mat = preTranspose vertices vertices' mat where
 >     vertices  = verticesWith [] mat
 >     vertices' = toVecWith [] [0 .. cols - 1]
 

@@ -479,11 +479,17 @@ outMult = sMultWith (\i ovs a -> (i, a) : ovs)
 ```
 
 An unusual application of the above multiplication is the transposition
-of a homogeneous matrix.
+of a homogeneous matrix. We factor out the actual strategy in the
+function `preTranspose`.
+
+``` {.haskell}
+preTranspose :: Vec [Arc a] -> Vec [Arc a] -> Mat a -> Mat a
+preTranspose vs cols mat = Mat (fmap Vec ((vs .*|| mat) \\/ cols))
+```
 
 ``` {.haskell}
 transpose :: Mat a -> Mat a
-transpose mat = Mat (fmap Vec ((vertices .*|| mat) \\/ vertices)) where
+transpose mat = preTranspose vertices vertices mat where
     vertices = verticesWith [] mat
 ```
 
@@ -495,7 +501,7 @@ correct number of columns.
 
 ``` {.haskell}
 transposeHeterogeneous :: Int -> Mat a -> Mat a
-transposeHeterogeneous cols mat = Mat (fmap Vec ((vertices .*|| mat) \\/ vertices')) where
+transposeHeterogeneous cols mat = preTranspose vertices vertices' mat where
     vertices  = verticesWith [] mat
     vertices' = toVecWith [] [0 .. cols - 1]
 ```
