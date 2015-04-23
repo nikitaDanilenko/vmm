@@ -691,6 +691,14 @@ matA = Mat $ Vec [(0, Vec [(1, 1), (2, 1)]),
                   (2, Vec [(1, 2)])]
 ```
 
+``` {.haskell}
+matB :: Mat Int
+matB = Mat $ Vec [ (0, Vec [(1, 1), (2, 2)]),
+                   (1, Vec [(2, 3)]),
+                   (2, Vec [(1, 4)])
+                 ]
+```
+
 Two arbitrary matrices.
 
 ``` {.haskell}

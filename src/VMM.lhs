@@ -530,6 +530,12 @@ This is the matrix *A* from Section 3 of the paper:
 >                   (1, Vec [(2, 1)]),
 >                   (2, Vec [(1, 2)])]
 
+> matB :: Mat Int
+> matB = Mat $ Vec [ (0, Vec [(1, 1), (2, 2)]),
+>                    (1, Vec [(2, 3)]),
+>                    (2, Vec [(1, 4)])
+>                  ]
+
 Two arbitrary matrices.
 
 > mat1 :: Mat (Number Integer)
