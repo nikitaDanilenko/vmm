@@ -432,7 +432,7 @@ the information collected by the supplied multiplication.
 >              -> Vec b                     -- target vector
 >              -> [Mat c]                   -- list of graphs traversed in every step
 >              -> Vec a
-> shortestWith mul a b gs = head (dropWhile isEmptyVec (map (//\ b) (reachWith mul a gs)) ++ [Vec []])
+> shortestWith mul a b gs = head (dropWhile isEmptyVec (map (//\ b) (reachWith mul a gs)) ++ [emptyVec])
 
 Maximal Set of Pairwise Disjoint Shortest Paths
 ===============================================
