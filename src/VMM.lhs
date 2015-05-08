@@ -402,7 +402,7 @@ An application of the above multiplication is the computation of the reachabilit
 shortest paths between two vertex sets, which is provided by the following function.
 
 > reachForest :: Vec a -> Vec b -> [Mat c] -> Vec (Forest Vertex)
-> reachForest a = shortestWith (.*++) (fmap (const []) a)
+> reachForest = shortestWith (.*++) . fmap (const [])
 
 Reachability and Iterated Computations
 ======================================

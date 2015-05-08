@@ -535,7 +535,7 @@ is provided by the following function.
 
 ``` {.haskell}
 reachForest :: Vec a -> Vec b -> [Mat c] -> Vec (Forest Vertex)
-reachForest a = shortestWith (.*++) (fmap (const []) a)
+reachForest = shortestWith (.*++) . fmap (const [])
 ```
 
 Reachability and Iterated Computations
