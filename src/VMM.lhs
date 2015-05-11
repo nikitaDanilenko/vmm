@@ -16,7 +16,7 @@ This module uses the separated modules
 
 > module VMM where
 > 
-> import Control.Applicative              ( Applicative ( .. ) )
+> import Control.Applicative              ( Applicative ( .. ), liftA2 )
 > import Control.Arrow                    ( second, (&&&) )
 > import Control.Monad                    ( ap, liftM, MonadPlus ( .. ) )
 > import Control.Monad.ST.Lazy.Safe       ( ST, runST )
@@ -482,20 +482,20 @@ All of the definitions below are almost identical to the ones from `Data.Graph`.
 
 > newtype SetM a = Set { runSet :: forall s . STArray s Int Bool -> ST s a }
 > 
-> instance Monad SetM where
-> 
->     return x = Set (const (return x))
+> instance Functor SetM where
+>     fmap f s = Set (fmap f . runSet s)
+>     
+> instance Applicative SetM where
+>     pure x = Set (const (return x)) -- no eta-reduction due to the forall-type
+>     f <*> x = Set (liftA2 (<*>) (runSet f) (runSet x))
+>
+> instance Monad SetM where 
+>     return  = pure
 > 
 >     Set m >>= f = Set fun where
 >         fun arr = do x <- m arr
 >                      runSet (f x) arr
-> 
-> instance Functor SetM where
->     fmap = liftM
-> 
-> instance Applicative SetM where
->     pure  = return
->     (<*>) = ap
+
 
 Checks whether an index is contained in the set or not.
 
