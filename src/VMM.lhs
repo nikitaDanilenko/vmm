@@ -490,7 +490,7 @@ All of the definitions below are almost identical to the ones from `Data.Graph`.
 >     f <*> x = Set (liftA2 (<*>) (runSet f) (runSet x))
 >
 > instance Monad SetM where 
->     return  = pure
+>     return = pure
 > 
 >     Set m >>= f = Set fun where
 >         fun arr = do x <- m arr
@@ -536,7 +536,7 @@ This is the matrix *A* from Section 3 of the paper:
 >                    (2, Vec [(1, 4)])
 >                  ]
 
-Two arbitrary matrices.
+Some arbitrary matrices.
 
 > mat1 :: Mat (Number Integer)
 > mat1 = Mat $ Vec [(0, Vec [(3,  2),(5,  0)]),
@@ -557,6 +557,17 @@ Two arbitrary matrices.
 >                   (7, Vec [(3,'v'),(6,'f'),(9,'v')]),
 >                   (8, Vec [(2,'g'),(4,'m'),(5,'k'),(7,'w'),(8,'k')]),
 >                   (9, Vec [(0,'c'),(2,'a')])]
+>
+> mat3 :: Mat ()
+> mat3 = Mat $ Vec [(0, toVec [2, 4]),
+>                   (1, toVec [3]),
+>                   (2, toVec [5, 6]),
+>                   (3, toVec [6, 9]),
+>                   (4, toVec [6]),
+>                   (5, toVec [3, 7]),
+>                   (6, toVec [0, 8]),
+>                   (7, toVec []),
+>                   (8, toVec [])]
 
 These two matrices are structurally identical, but the first one contains `Char` values,
 while the second one contains only ones of the type `Number Int`. These two correspond
