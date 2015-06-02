@@ -722,7 +722,7 @@ mat2 = Mat $ Vec [(0, Vec [(3,'g')]),
                   (9, Vec [(0,'c'),(2,'a')])]
 
 mat3 :: Mat ()
-mat3 = Mat $ Vec [(0, toVec [2, 4]),
+mat3 = Mat $ Vec [(0, toVec [2, 3, 4]),
                   (1, toVec [3]),
                   (2, toVec [5, 6]),
                   (3, toVec [6, 9]),
@@ -730,7 +730,8 @@ mat3 = Mat $ Vec [(0, toVec [2, 4]),
                   (5, toVec [3, 7]),
                   (6, toVec [0, 8]),
                   (7, toVec []),
-                  (8, toVec [])]
+                  (8, toVec []),
+                  (9, toVec [4])]
 ```
 
 These two matrices are structurally identical, but the first one
