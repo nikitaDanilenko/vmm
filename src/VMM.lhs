@@ -103,6 +103,11 @@ Transforming back from a vector is simple, since only the values need to be remo
 > fromVec :: Vec a -> [Vertex]
 > fromVec = map fst . unVec
 
+This function filters the value in a vector according to the supplied predicate.
+
+> filterVec :: (a -> Bool) -> Vec a -> Vec a
+> filterVec p = Vec . filter (p . snd) . unVec
+
 Set operations on vectors
 -------------------------
 
@@ -162,7 +167,6 @@ case the index is present in both vectors.
 
 > (//\) :: Vec a -> Vec b -> Vec a
 > v //\ w = Vec (intersectionWithKey (\i x _ -> (i, x)) v w)
-
 
 This function denotes set difference. Its "skew" type is due to the fact that all values in its
 second argument are ignored, because only the indices are being compared.
@@ -237,7 +241,7 @@ require these predicates to be part of the semiring type class.
 This function removes all pairs from a vector whose value is `zero`.
 
 > nonZero :: (Semiring s, Eq s) => Vec s -> Vec s
-> nonZero = Vec . filter (not . isZero . snd) . unVec
+> nonZero = filterVec (not . isZero)
 
 This is a variant of `(.*)` that uses algebraic laws to avoid zeroes in the result vector
 as well as avoiding possibly unnecessary computations.

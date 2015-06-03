@@ -137,6 +137,14 @@ fromVec :: Vec a -> [Vertex]
 fromVec = map fst . unVec
 ```
 
+This function filters the value in a vector according to the supplied
+predicate.
+
+``` {.haskell}
+filterVec :: (a -> Bool) -> Vec a -> Vec a
+filterVec p = Vec . filter (p . snd) . unVec
+```
+
 Set operations on vectors
 -------------------------
 
@@ -312,7 +320,7 @@ This function removes all pairs from a vector whose value is `zero`.
 
 ``` {.haskell}
 nonZero :: (Semiring s, Eq s) => Vec s -> Vec s
-nonZero = Vec . filter (not . isZero . snd) . unVec
+nonZero = filterVec (not . isZero)
 ```
 
 This is a variant of `(.*)` that uses algebraic laws to avoid zeroes in
