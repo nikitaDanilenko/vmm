@@ -542,8 +542,8 @@ reachability forest along shortest paths between two vertex sets, which
 is provided by the following function.
 
 ``` {.haskell}
-reachForest :: Vec a -> Vec b -> [Mat c] -> Vec (Forest Vertex)
-reachForest = shortestWith (.*++) . fmap (const [])
+reachForest :: Vec (Forest Vertex) -> Vec b -> [Mat c] -> Vec (Forest Vertex)
+reachForest = shortestWith (.*++)
 ```
 
 Reachability and Iterated Computations
@@ -618,14 +618,22 @@ used for the computation is "left" and the resulting list of
 `Maybe Path` values is transformed into a list of paths by `catMaybes`.
 
 ``` {.haskell}
-disjointPaths :: Int      -- number of vertices in the graph(s)
-              -> Vec a    -- start vector
-              -> Vec b    -- target vector
-              -> [Mat c]  -- list of traversed graphs in every step
+disjointPaths :: Int                    -- number of vertices in the graph(s)
+              -> Vec (Forest Vertex)    -- start vector
+              -> Vec b                  -- target vector
+              -> [Mat c]                -- list of traversed graphs in every step
               -> [Path]
 disjointPaths n start end gs = catMaybes (process (reachForest start end gs)) where
 
     process = runNew n . mapM (runMaybeT . chop . return . uncurry Node) . unVec
+```
+
+A simplified version of `disjointPaths` where the values in the start
+vector are ignored and replaced by the empty forest.
+
+``` {.haskell}
+disjointPathsSimple :: Int -> Vec a -> Vec b -> [Mat c] -> [Path]
+disjointPathsSimple n = disjointPaths n . fmap (const [])
 ```
 
 Monadic set interface
