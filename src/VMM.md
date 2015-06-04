@@ -21,7 +21,7 @@ module VMM where
 
 import Control.Applicative              ( Applicative ( .. ), liftA2 )
 import Control.Arrow                    ( second, (&&&) )
-import Control.Monad                    ( ap, liftM, MonadPlus ( .. ) )
+import Control.Monad                    ( ap, MonadPlus ( .. ) )
 import Control.Monad.ST.Lazy.Safe       ( ST, runST )
 import Control.Monad.Trans.Class        ( lift )
 import Control.Monad.Trans.Maybe        ( MaybeT ( .. ) )
