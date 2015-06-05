@@ -156,17 +156,23 @@ The repeated application is then the leftmost union that is just as simple to de
 > leftmostUnion = bigUnionWith const
 
 The intersection function for intersecting association lists using a user supplied combination
-function. It is very similar to `zipWith`.
+function. It is very similar to `zipWith`. The `L` at the end hints at the result type being a list.
 
-> intersectionWithKey :: (Int -> a -> b -> c) -> Vec a -> Vec b -> [c]
-> intersectionWithKey f (Vec xs) (Vec ys) = go xs ys where
+> intersectionWithKeyL :: (Int -> a -> b -> c) -> Vec a -> Vec b -> [c]
+> intersectionWithKeyL f (Vec xs) (Vec ys) = go xs ys where
 >   go = mergeWith (const []) (const []) (\i x y r -> f i x y : r) constFourth constFourth
+
+The more homogeneous version of the intersection function can be implemented with the above function
+as follows.
+
+> intersectionWithKey :: (Int -> a -> b -> c) -> Vec a -> Vec b -> Vec c
+> intersectionWithKey op v w = Vec (intersectionWithKeyL (\i x y -> (i, op i x y)) v w)
 
 One useful intersection instance is the "left-biased intersection" that takes the left value in
 case the index is present in both vectors.
 
 > (//\) :: Vec a -> Vec b -> Vec a
-> v //\ w = Vec (intersectionWithKey (\i x _ -> (i, x)) v w)
+> (//\) = intersectionWithKey (\_ x _ -> x)
 
 This function denotes set difference. Its "skew" type is due to the fact that all values in its
 second argument are ignored, because only the indices are being compared.
@@ -214,7 +220,7 @@ function to the result of the intersection of the vector with the matrix, which 
 using the scalar multiplication function.
 
 > vecMatMult :: ([u] -> v) -> (Int -> s -> Vec t -> u) -> Vec s -> Mat t -> v
-> vecMatMult bigsum sMult v m = bigsum (intersectionWithKey sMult v (matrix m))
+> vecMatMult bigsum sMult v m = bigsum (intersectionWithKeyL sMult v (matrix m))
 
 Applications of the Multiplication Scheme
 =========================================
