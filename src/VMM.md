@@ -591,6 +591,18 @@ shortestWith :: (Vec a -> Mat c -> Vec a) -- multiplication that collects inform
 shortestWith mul a b gs = head (dropWhile isEmptyVec (map (//\ b) (reachWith mul a gs)) ++ [emptyVec])
 ```
 
+Another useful application is to compute the vector that represents all
+vertices that are reachable from a given start vector. To that end we
+need to combine the vectors in the list produced by `reachWith`. Since
+this list contains only distinct reachability layers, all of its
+elements are pairwise disjoint. Thus we can use `leftmostUnion` to merge
+the results without losing any information.
+
+``` {.haskell}
+reachableWith :: (Vec a -> Mat b -> Vec a) -> Vec a -> [Mat b] -> Vec a
+reachableWith mult vec = leftmostUnion . reachWith mult vec
+```
+
 Maximal Set of Pairwise Disjoint Shortest Paths
 ===============================================
 
