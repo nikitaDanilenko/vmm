@@ -54,7 +54,7 @@ This semiring is usually defined on the non-negative real numbers with infinity,
 easily generalised.
 
 > data Tropical w = MinWeight | MaxWeight | Weight { weight :: w }
->     deriving Eq
+>     deriving ( Eq, Show )
 
 > instance Ord w => Ord (Tropical w) where
 >     compare MinWeight  MinWeight   = EQ

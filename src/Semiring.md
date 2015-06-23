@@ -63,7 +63,7 @@ generalised.
 
 ``` {.haskell}
 data Tropical w = MinWeight | MaxWeight | Weight { weight :: w }
-    deriving Eq
+    deriving ( Eq, Show )
 ```
 
 ``` {.haskell}
