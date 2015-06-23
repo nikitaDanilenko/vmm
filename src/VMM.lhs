@@ -74,6 +74,7 @@ This function checks whether the wrapped association list of a vector is empty.
 For simplicity of implementation and testing we define conversion functions between sets of vertices
 and vectors. To obtain a vector from a list of arcs, we need to sort the arcs with respect to their
 first components and remove all duplicates. We keep only the first occurrence of any value.
+Note that this function does not remove possible zero values.
 
 > mkVec :: [Arc a] -> Vec a
 > mkVec = Vec . map head . groupBy ((==) `on` fst) . sortBy (comparing fst)
