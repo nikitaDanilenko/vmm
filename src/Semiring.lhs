@@ -57,10 +57,12 @@ easily generalised.
 >     deriving Eq
 
 > instance Ord w => Ord (Tropical w) where
+>     compare MinWeight  MinWeight   = EQ
 >     compare MinWeight  _           = LT
 >     compare _          MinWeight   = GT
->     compare MaxWeight  _           = GT
+>     compare MaxWeight  MaxWeight   = EQ
 >     compare _          MaxWeight   = LT
+>     compare MaxWeight  _           = GT
 >     compare w          w'          = comparing weight w w'
 
 `Tropical w` forms a semiring if `w` has an `Ord` and a `Monoid`
