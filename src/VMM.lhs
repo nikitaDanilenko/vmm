@@ -375,11 +375,11 @@ vertex and the outgoing value to the given list of vertex-value pairs.
 An unusual application of the above multiplication is the transposition of a homogeneous matrix.
 We factor out the actual strategy in the function `preTranspose`.
 
-> preTranspose :: Vec [Arc a] -> Vec [Arc a] -> Mat a -> Mat a
-> preTranspose vs cols mat = Mat (fmap Vec ((vs .*|| mat) \\/ cols))
+> preTranspose :: Vec [Arc a] -> Vec [Arc a] -> Mat a -> Vec (Vec a)
+> preTranspose vs cols mat = fmap Vec ((vs .*|| mat) \\/ cols)
 
 > transpose :: Mat a -> Mat a
-> transpose mat = preTranspose vertices vertices mat where
+> transpose mat = Mat (preTranspose vertices vertices mat) where
 >     vertices = verticesWith [] mat
 
 It is possible to define a very similar function that computes the transposition of a heterogeneous
@@ -387,8 +387,15 @@ matrix by adding an additional `Int` argument that denotes the number of columns
 number can then be used in the "correction" step (application of `(\\/)`) to add the
 correct number of columns.
 
+Note that supplying the incorrect number of columns has the following effects:
+
+  - if the supplied number is smaller than the actual number of colums,
+    only columns up to the specified number are returned
+  - if the supplied number is larger than the actual number of columns,
+    new empty rows are added at the bottom of the matrix
+
 > transposeHeterogeneous :: Int -> Mat a -> Mat a
-> transposeHeterogeneous cols mat = preTranspose vertices vertices' mat where
+> transposeHeterogeneous cols mat = Mat (preTranspose vertices vertices' mat //\ vertices') where
 >     vertices  = verticesWith [] mat
 >     vertices' = toVecWith [] [0 .. cols - 1]
 

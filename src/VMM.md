@@ -501,13 +501,13 @@ of a homogeneous matrix. We factor out the actual strategy in the
 function `preTranspose`.
 
 ``` {.haskell}
-preTranspose :: Vec [Arc a] -> Vec [Arc a] -> Mat a -> Mat a
-preTranspose vs cols mat = Mat (fmap Vec ((vs .*|| mat) \\/ cols))
+preTranspose :: Vec [Arc a] -> Vec [Arc a] -> Mat a -> Vec (Vec a)
+preTranspose vs cols mat = fmap Vec ((vs .*|| mat) \\/ cols)
 ```
 
 ``` {.haskell}
 transpose :: Mat a -> Mat a
-transpose mat = preTranspose vertices vertices mat where
+transpose mat = Mat (preTranspose vertices vertices mat) where
     vertices = verticesWith [] mat
 ```
 
@@ -517,9 +517,17 @@ argument that denotes the number of columns. This number can then be
 used in the "correction" step (application of `(\\/)`) to add the
 correct number of columns.
 
+Note that supplying the incorrect number of columns has the following
+effects:
+
+-   if the supplied number is smaller than the actual number of colums,
+    only columns up to the specified number are returned
+-   if the supplied number is larger than the actual number of columns,
+    new empty rows are added at the bottom of the matrix
+
 ``` {.haskell}
 transposeHeterogeneous :: Int -> Mat a -> Mat a
-transposeHeterogeneous cols mat = preTranspose vertices vertices' mat where
+transposeHeterogeneous cols mat = Mat (preTranspose vertices vertices' mat //\ vertices') where
     vertices  = verticesWith [] mat
     vertices' = toVecWith [] [0 .. cols - 1]
 ```
