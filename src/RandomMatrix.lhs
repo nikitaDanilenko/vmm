@@ -60,7 +60,7 @@ Any density larger than 1 behaves as 1 and every density smaller than 0 behaves 
 >  -> MatLike a
 > randomMatLikeWith g rs cs size resize d lu = resize shuffled where
 >     shuffled = shuffle' toGo entries g2
->     entries  = size cs rs
+>     entries  = size rs cs
 >     fill     = floor (fromIntegral entries * d)
 >     toGo     =    map Just (take fill (randomRs lu g1)) -- \"interesting\" values
 >                ++ replicate (entries - fill) Nothing    -- \"zeroes\"
