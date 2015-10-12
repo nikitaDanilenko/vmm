@@ -520,7 +520,7 @@ correct number of columns.
 Note that supplying the incorrect number of columns has the following
 effects:
 
--   if the supplied number is smaller than the actual number of colums,
+-   if the supplied number is smaller than the actual number of columns,
     only columns up to the specified number are returned
 -   if the supplied number is larger than the actual number of columns,
     new empty rows are added at the bottom of the matrix
@@ -618,12 +618,12 @@ Maximal Set of Pairwise Disjoint Shortest Paths
 The computation of a maximal set of pairwise disjoint shortest paths
 between two vertex sets is realised by computing the reachability forest
 with the `reachForest` function and then pruning it with the following
-strategy. If there is no tree left, there no path left in the forest. If
+strategy. If there is no tree left, there is no path left in the forest. If
 on the other hand there is a leftmost tree, check whether its root node
 is visited. If it is, continue with the remainder of the forest. If it's
 not, then visit this vertex. Next compute a path candidate. In case the
 candidate is indeed a path, add the vertex to its end and obtain a path
-in the graph. Otherwise continue searching in the remaining forest. The
+in the graph. Otherwise, continue searching in the remaining forest. The
 candidate is the empty path in case the current subforest is empty,
 since this means that the bottom of the forest has been reached and the
 path found by the recursive call on the subforest otherwise.
@@ -670,7 +670,7 @@ Monadic set interface
 ---------------------
 
 The following monadic set interface is very similar to the one in
-[`Data.Graph`](http://hackage.haskell.org/package/containers-0.5.4.0/docs/Data-Graph.html).
+[`Data.Graph`](http://hackage.haskell.org/package/containers-0.5.4.0/docs/Data-Graph.html)
 and can be replaced with a pure set representation by `Data.IntSet`. All
 of the definitions below are almost identical to the ones from
 `Data.Graph`.
